@@ -1,0 +1,32 @@
+{
+  "name": "classconnect-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for classconnect app",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsnd --respawn src/app.ts",
+    "build": "rimraf ./dist && tsc",
+    "start": "npm run build && node dist/app.js"
+  },
+  "keywords": [],
+  "author": "Saulo Román Santillán Nava",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "prisma": "^6.6.0",
+    "rimraf": "^6.0.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "env-var": "^7.5.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.1",
+    "uuid": "^11.1.0"
+  }
+}
