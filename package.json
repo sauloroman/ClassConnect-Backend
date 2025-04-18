@@ -12,6 +12,8 @@
   "author": "Saulo Román Santillán Nava",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
     "prisma": "^6.6.0",
     "rimraf": "^6.0.1",

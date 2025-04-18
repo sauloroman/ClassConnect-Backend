@@ -1,0 +1,1 @@
+export {regularExp} from './reg-exp.util'
