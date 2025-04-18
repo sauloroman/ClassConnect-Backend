@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userController } from "../../container/user.container";
+import { userController } from "../../container";
 
 export class UserRoutes {
 

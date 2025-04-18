@@ -25,7 +25,7 @@ export class CreateUserDto {
 
     const { firstName, lastName, email, password, role } = obj
 
-    if ( regularExp.email.test( email ) ) return [ undefined, 'El email no es valido']
+    if ( !regularExp.email.test( email ) ) return [ undefined, 'El email no es valido']
 
     return [
       new CreateUserDto(
