@@ -20,6 +20,15 @@ export class PrismaUserRepository implements UserRepository {
     return user
   }
 
+  async findById(id: string): Promise<UserEntity | null> {
+    const possibleUser = await prismaClient.users.findUnique({ where: { id }})
+
+    if ( !possibleUser ) return null
+    
+    const user = UserEntity.fromObject( possibleUser )
+    return user
+  }
+
   async updateUser(id: string, dto: Partial<UpdateUserDto>): Promise<UserEntity> {    
     const userUpdated = await prismaClient.users.update({ where: { id }, data: { ...dto }})
     const user = UserEntity.fromObject( userUpdated )
