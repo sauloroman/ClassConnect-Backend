@@ -12,6 +12,8 @@ interface ValidateCodeServiceOptions {
 
 export class ValidateCodeService {
 
+  private readonly activeCodeDurationInMinutes = 10
+
   private readonly validateCodeRepo: ValidateCodeRepository
   private readonly userRepo: UserRepository
   private readonly emailSender: EmailService
@@ -30,6 +32,18 @@ export class ValidateCodeService {
     if ( !user ) throw CustomError.notFound(`El usuario con id: ${userId} no existe`)
 
     await this.validateCodeRepo.createCode({ code, userId })
+
+  }
+
+  async isCodeValid( userId: string, code: string ): Promise<boolean> {
+
+    const latestCode = await this.validateCodeRepo.getLatestCodeByUserId( userId )
+    if ( !latestCode ) return false
+
+    const diffMs = new Date().getTime() - latestCode.createdAt.getTime()
+    const diffMin = diffMs / 1000 / 60
+
+    return latestCode.code === code && diffMin < this.activeCodeDurationInMinutes
 
   }
 

@@ -9,7 +9,7 @@ export class PrismaValidateCodeRepository implements ValidateCodeRepository {
 
     const codeGenerated = await prismaClient.validateAccountCode.create({ data: {
       code: dto.code,
-      user_id: dto.userId,
+      userId: dto.userId,
     }})
 
     const codeGeneratedEntity = ValidateCodeEntity.fromObject( codeGenerated )
@@ -22,7 +22,16 @@ export class PrismaValidateCodeRepository implements ValidateCodeRepository {
   }
   
   async getLatestCodeByUserId(userId: string): Promise<ValidateCodeEntity | null> {
-    return null
+    
+    const latestCodeRecord = await prismaClient.validateAccountCode.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    if ( !latestCodeRecord ) return null
+
+    const codeEntity = ValidateCodeEntity.fromObject( latestCodeRecord )
+    return codeEntity
   }
 
 }
