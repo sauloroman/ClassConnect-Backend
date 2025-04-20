@@ -39,5 +39,11 @@ export class UserControllers {
 
   }
 
+  public validateUser = ( req: Request, res: Response ): any => {
+
+
+
+  }
+
 
 }

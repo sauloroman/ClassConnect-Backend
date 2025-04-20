@@ -35,6 +35,6 @@ export class UserService {
 
     await this.validateCodeService.generateValidateCode(user.id);
 
-    return user;
+    return user
   }
 }

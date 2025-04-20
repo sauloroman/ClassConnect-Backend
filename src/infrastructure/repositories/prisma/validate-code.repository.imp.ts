@@ -18,7 +18,7 @@ export class PrismaValidateCodeRepository implements ValidateCodeRepository {
   }
 
   async deleteByUserId(userId: string): Promise<void> {
-    return    
+    await prismaClient.validateAccountCode.deleteMany({ where: { userId }})
   }
   
   async getLatestCodeByUserId(userId: string): Promise<ValidateCodeEntity | null> {
