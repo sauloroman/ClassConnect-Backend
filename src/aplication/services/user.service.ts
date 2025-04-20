@@ -1,10 +1,9 @@
-import { CreateUserDto } from '../../domain/dtos/user/create-user.dto';
+import { CreateUserDto } from '../../domain/dtos/user';
 import { UserEntity } from '../../domain/entities';
 import { UserRepository } from '../../domain/repositories/user.repository';
-import { ValidateCodeRepository } from '../../domain/repositories/validate-code.reposity';
+import { ValidateCodeService } from './validate-code.service';
 import { CustomError } from '../../shared/errors';
 import { bcryptAdapter } from '../../shared/plugins';
-import { ValidateCodeService } from './validate-code.service';
 
 interface UserServiceOptions {
   userRepo: UserRepository;
@@ -33,8 +32,11 @@ export class UserService {
     user.password = bcryptAdapter.hash(user.password);
     await this.userRepo.updateUser(user.id, { password: user.password });
 
-    await this.validateCodeService.generateValidateCode(user.id);
+    await this.validateCodeService.generateValidationCode(user.id, dto.email);
 
     return user
   }
+
 }
+
+

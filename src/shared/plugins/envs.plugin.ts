@@ -17,4 +17,6 @@ export const envs = {
 
   VERIFICATION_CODE_DURATION: env.get('VERIFICATION_CODE_DURATION').required().asIntPositive(),
 
+  JWT_SEED: env.get('JWT_SEED').required().asString(),
+
 }

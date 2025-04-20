@@ -3,9 +3,9 @@ import { NodemailerService } from "../infrastructure/services/email/nodemailer.s
 import { envs } from "../shared/plugins";
 import { RepositoriesContainer } from "./repositories.container";
 
-const { validateCodeRepo, userRepo } = RepositoriesContainer.getInstance()
+const { validateCodeRepo } = RepositoriesContainer.getInstance()
 
-const emailService = new NodemailerService({
+export const emailService = new NodemailerService({
   mailerService: envs.MAILER_SERVICE,
   mailerEmail: envs.MAILER_EMAIL,
   postToProvider: envs.SEND_EMAIL,
@@ -15,7 +15,6 @@ const emailService = new NodemailerService({
 export const validateCodeService = new ValidateCodeService({
   duration: envs.VERIFICATION_CODE_DURATION,
   validateCodeRepo: validateCodeRepo,
-  userRepo: userRepo,
   emailSender: emailService,
 })
 

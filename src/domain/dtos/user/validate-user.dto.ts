@@ -1,8 +1,8 @@
-export class CreateValidateCodeDto {
+export class ValidateUserDto {
 
   private constructor(
+    public readonly email: string,
     public readonly code: string,
-    public readonly userId: string
   ){}
 
   private static validateEmptyValue( name: string, value: string ): string | null {
@@ -10,16 +10,17 @@ export class CreateValidateCodeDto {
     return null
   }
 
-  public static create( obj: {[key: string]: any}): [ CreateValidateCodeDto?, string? ] {
-
-    for( const [ key, value ] of Object.entries(obj) ) {
+  public static create( obj: {[key: string]: any}): [ ValidateUserDto?, string? ] {
+    
+    for( const [ key, value ] of Object.entries( obj )) {
       const errorMessage = this.validateEmptyValue( key, value )
       if ( errorMessage ) return [ undefined, errorMessage ]
     }
 
-    const { code, userId } = obj
+    const { email, code } = obj
 
-    return [ new CreateValidateCodeDto( code, userId ) ]
+    return [ new ValidateUserDto( email, code ) ]
+
   }
 
 }

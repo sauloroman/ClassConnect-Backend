@@ -8,7 +8,6 @@ export class UserRoutes {
     const router = Router()
 
     router.post('/', userController.postUser )
-    router.post('/validate-user', userController.validateUser )
 
     return router
 
