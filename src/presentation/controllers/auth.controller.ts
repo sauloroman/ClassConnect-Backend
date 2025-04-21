@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AuthService } from '../../aplication/services';
 import { ValidateUserDto } from '../../domain/dtos/user';
 import { CustomError } from '../../shared/errors';
-import { LoginDto, ResentValidateCodeDto } from '../../domain/dtos/auth';
+import { ChangePasswordDto, ForgotPasswordDto, LoginDto, ResentValidateCodeDto } from '../../domain/dtos/auth';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -76,5 +76,39 @@ export class AuthController {
         });
       })
       .catch((err) => this.handleErrorResponse(err, res));
-  };
+  }
+
+  public forgotPassword = ( req: Request, res: Response ): any => {
+
+    const [ dto, errorMessage ] = ForgotPasswordDto.create( req.body )
+
+    if (errorMessage) {
+      return res.status(400).json({ ok: false, error: errorMessage });
+    }
+
+    this.authService.forgotPassword( dto! )
+      .then( () => {
+        res.status(200).json({ 
+          ok: true, 
+          msg: 'Revisa tu correo electrónico y sigue las instrucciones para recuperar tu contraseña',
+        }) 
+      })
+      .catch( err => this.handleErrorResponse( err, res ) )
+
+  }
+
+  public changePassword = ( req: Request, res: Response ): any => {
+
+    const [ dto, errorMessage ] = ChangePasswordDto.create( req.body )
+
+    if (errorMessage) {
+      return res.status(400).json({ ok: false, error: errorMessage });
+    }
+
+    this.authService.changeAccountPassword( dto! )
+      .then( () => res.status(200).json({ ok: true, msg: 'La contraseña se ha cambiado correctamente. Inicie sesión.'}))
+      .catch( err => this.handleErrorResponse( err, res ) )
+
+  }
+
 }

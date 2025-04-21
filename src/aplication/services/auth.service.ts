@@ -1,6 +1,6 @@
 import { LoginSessionEntity, UserEntity } from "../../domain/entities"
 import { ValidateUserDto } from "../../domain/dtos/user"
-import { LoginDto } from "../../domain/dtos/auth"
+import { ChangePasswordDto, ForgotPasswordDto, LoginDto } from "../../domain/dtos/auth"
 import { UserRepository } from "../../domain/repositories"
 import { EmailService } from "../../domain/services/email.service"
 import { ValidateCodeService } from "./validate-code.service"
@@ -58,6 +58,39 @@ export class AuthService {
     }
   }
 
+  async forgotPassword( forgotPasswordDto: ForgotPasswordDto ): Promise<void> {
+
+    const user = await this.userRepo.findUserByEmail( forgotPasswordDto.email )
+    if ( !user ) throw CustomError.notFound(`El usuario con email: ${forgotPasswordDto.email} no existe`)
+
+    const payload = { email: user.email }
+    const token = await jwtAdapter.generateJWT( payload )
+
+    await this.emailSender.sendRecoverPasswordEmail({
+      to: user.email,
+      subject: 'ClassConnect - Recupera tu cuenta'
+    }, token as string )
+
+  }
+
+  async changeAccountPassword( changePasswordDto: ChangePasswordDto ): Promise<void> {
+
+    const { newPassword, userEmail } = changePasswordDto
+
+    const user = await this.userRepo.findUserByEmail( userEmail )
+    if ( !user ) throw CustomError.notFound(`El usuario con email: ${userEmail} no existe`)
+
+    const newPasswordHashed = bcryptAdapter.hash( newPassword )
+    await this.userRepo.updateUser( user.id, { password: newPasswordHashed } )
+
+    // TODO: Implementar changeAccountPassword template
+    // await this.emailSender.sendChangedPasswordEmail({
+    //   subject: 'ClassConnnect - Cambio de contraseña',
+    //   to: user.email,
+    // })
+
+  }
+
   async validateAccount( dto: ValidateUserDto ): Promise<{ user: UserEntity, token: unknown }> {
     
     const user = await this.userRepo.findUserByEmail( dto.email )
@@ -75,10 +108,11 @@ export class AuthService {
 
     const userUpdated = await this.userRepo.updateUser( user.id, { isAccountVerified: true } )
 
-    await this.emailSender.sendWelcomeEmail({
-      subject: 'ClassConnnect - Cuenta validada correctamente',
-      to: userUpdated.email,
-    })
+    // TODO: Implementar welcomeEmail template
+    // await this.emailSender.sendWelcomeEmail({
+    //   subject: 'ClassConnnect - Cuenta validada correctamente',
+    //   to: userUpdated.email,
+    // })
 
     const payload = {
       id: user.id,

@@ -13,6 +13,8 @@ export class AuthRoutes {
     router.post('/login', [ LoginSessionMiddleware.sessionLogger ], authController.login )
     router.post('/validate-account', authController.validateAccount )
     router.post('/resend-verification-code', authController.resendValidationCode )
+    router.post('/forgot-password', authController.forgotPassword )
+    router.post('/change-password', authController.changePassword )
 
     return router
 

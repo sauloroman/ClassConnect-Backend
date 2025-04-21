@@ -1,7 +1,7 @@
 import nodemailer, { Transporter } from 'nodemailer'
 import { EmailService, ISendEmailOptions } from "../../../domain/services/email.service";
 import { CustomError } from '../../../shared/errors';
-import { verificationCodeEmailTemplate } from '../../templates/email/verification-code';
+import { verificationCodeEmailTemplate, forgotPasswordEmailTemplate } from '../../templates/email';
 
 interface NodemailerServiceOptions {
   mailerService: string;
@@ -30,7 +30,7 @@ export class NodemailerService implements EmailService {
 
   async sendValidationCode(sendEmailOptions: ISendEmailOptions, code: string): Promise<void> {
     
-    const { to, subject, attachments = [] } = sendEmailOptions
+    const { to, subject } = sendEmailOptions
 
     try { 
 
@@ -41,19 +41,43 @@ export class NodemailerService implements EmailService {
         to,
         subject,
         html: htmlBody,
-        attachments: attachments
       })
       
       console.log(sentInformation)
 
     } catch (error) {
-      throw CustomError.internalServerError('No fue posible enviar el email')
+      throw CustomError.internalServerError('No fue posible enviar el email para verificar la cuenta')
     }
 
   }
 
-  async sendWelcomeEmail(sendEmailOptions: ISendEmailOptions): Promise<boolean> {
-    return true
+  async sendRecoverPasswordEmail(sendEmailOptions: ISendEmailOptions, token: string): Promise<void> {
+    
+    try {
+      const { to, subject } = sendEmailOptions
+
+      const htmlBody = forgotPasswordEmailTemplate( token )
+  
+      const sentInformation = await this.transporter.sendMail({
+        from: `ClassConnect <${this.transporter.options.from?.toString()}>`,
+        to,
+        subject,
+        html: htmlBody
+      })
+  
+      console.log(sentInformation)
+    } catch (error) {
+      throw CustomError.internalServerError('No fue posible enviar el email para recuperar contraseña')
+    }
+
+  }
+
+  async sendWelcomeEmail(sendEmailOptions: ISendEmailOptions): Promise<void> {
+    return
+  }
+
+  async sendChangedPasswordEmail(sendEmailOptions: ISendEmailOptions): Promise<void> {
+    return 
   }
 
 }

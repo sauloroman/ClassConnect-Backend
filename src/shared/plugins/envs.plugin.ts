@@ -19,4 +19,6 @@ export const envs = {
 
   JWT_SEED: env.get('JWT_SEED').required().asString(),
 
+  FRONTEND_URL: env.get('FRONTEND_URL').required().asUrlString(),
+
 }
