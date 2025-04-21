@@ -39,8 +39,6 @@ export class AuthService {
     const isPasswordCorrect = bcryptAdapter.compare( password, user.password )
     if ( !isPasswordCorrect ) throw CustomError.badRequest('Las credenciales no son correctas')
 
-    await this.userRepo.updateUser( user.id, { lastLogin: new Date() })
-
     const payload = {
       id: user.id,
       role: user.role,

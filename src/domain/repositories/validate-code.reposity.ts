@@ -1,4 +1,4 @@
-import { CreateValidateCodeDto } from "../dtos/validate-code";
+import { CreateValidateCodeDto } from "../dtos/auth";
 import { ValidateCodeEntity } from "../entities";
 
 export abstract class ValidateCodeRepository {

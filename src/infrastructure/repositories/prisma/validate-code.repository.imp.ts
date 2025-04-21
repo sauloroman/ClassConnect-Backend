@@ -1,4 +1,4 @@
-import { CreateValidateCodeDto } from "../../../domain/dtos/validate-code";
+import { CreateValidateCodeDto } from "../../../domain/dtos/auth";
 import { ValidateCodeEntity } from "../../../domain/entities";
 import { ValidateCodeRepository } from "../../../domain/repositories/validate-code.reposity";
 import { prismaClient } from "../../database/prisma/prisma-client";

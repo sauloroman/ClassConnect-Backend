@@ -7,5 +7,6 @@ export abstract class UserRepository {
   abstract findUserByEmail( email: string ): Promise<UserEntity | null>
   abstract findById( id: string ): Promise<UserEntity | null>
   abstract updateUser( id: string, data: Partial<UpdateUserDto> ): Promise<UserEntity>
+  abstract deleteUserById( id: string ): Promise<void>
 
 }
