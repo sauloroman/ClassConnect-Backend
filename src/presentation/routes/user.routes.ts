@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { userController } from "../../container";
+import { controllers } from "../../container";
 
 export class UserRoutes {
 
   public static get routes(): Router {
 
     const router = Router()
+
+    const { userController } = controllers
 
     router.post('/', userController.postUser )
 

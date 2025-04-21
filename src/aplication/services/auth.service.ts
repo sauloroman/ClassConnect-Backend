@@ -1,30 +1,65 @@
-import { ValidateUserDto } from "../../domain/dtos/user"
 import { UserEntity } from "../../domain/entities"
-import { UserRepository } from "../../domain/repositories/user.repository"
+import { ValidateUserDto } from "../../domain/dtos/user"
+import { LoginDto } from "../../domain/dtos/auth"
+import { UserRepository } from "../../domain/repositories"
+import { EmailService } from "../../domain/services/email.service"
+import { ValidateCodeService } from "./validate-code.service"
 import { StatusVerificationCode } from "../../shared/enums"
 import { CustomError } from "../../shared/errors"
-import { jwtAdapter } from "../../shared/plugins"
-import { ValidateCodeService } from "./validate-code.service"
+import { bcryptAdapter, jwtAdapter } from "../../shared/plugins"
 
 interface AuthServiceOptions {
   userRepo: UserRepository,
-  validateCodeService: ValidateCodeService
+  validateCodeService: ValidateCodeService,
+  emailSender: EmailService,
 }
 
 export class AuthService {
 
   private readonly userRepo: UserRepository
   private readonly validateCodeService: ValidateCodeService
+  private readonly emailSender: EmailService
 
-  constructor({ userRepo, validateCodeService }: AuthServiceOptions) {
+  constructor({ userRepo, validateCodeService, emailSender }: AuthServiceOptions) {
     this.userRepo = userRepo
+    this.emailSender = emailSender
     this.validateCodeService = validateCodeService
+  }
+
+  async login( loginDto: LoginDto ): Promise<{ user: UserEntity, token: unknown }> {
+
+    const { email, password } = loginDto
+
+    const user = await this.userRepo.findUserByEmail( email )
+    if ( !user ) throw CustomError.badRequest(`Las credenciales no son correctas`)
+    
+    if ( !user.isActive ) throw CustomError.badRequest('El usuario no esta activo. Hable con el administrador.')
+    if ( !user.isAccountVerified ) throw CustomError.badRequest('El usuario no ha verificado su correo electrónico.')
+ 
+    const isPasswordCorrect = bcryptAdapter.compare( password, user.password )
+    if ( !isPasswordCorrect ) throw CustomError.badRequest('Las credenciales no son correctas')
+
+    await this.userRepo.updateUser( user.id, { lastLogin: new Date() })
+
+    const payload = {
+      id: user.id,
+      role: user.role,
+      email: user.email
+    }
+    const token = await jwtAdapter.generateJWT( payload )
+
+    return {
+      user: { ...user, password: '' },
+      token
+    }
   }
 
   async validateAccount( dto: ValidateUserDto ): Promise<{ user: UserEntity, token: unknown }> {
     
     const user = await this.userRepo.findUserByEmail( dto.email )
     if (!user) throw CustomError.notFound(`El usuario con email: ${dto.email} no existe`)
+
+    if ( user.isAccountVerified ) throw CustomError.badRequest('El usuario ya ha sido verificado')
 
     const statusValidationCode = await this.validateCodeService.verifyCodeStatus( user.id, dto.code )
     
@@ -35,6 +70,11 @@ export class AuthService {
       throw CustomError.unauthorized('El código ingresado no es correcto')
 
     const userUpdated = await this.userRepo.updateUser( user.id, { isAccountVerified: true } )
+
+    await this.emailSender.sendWelcomeEmail({
+      subject: 'ClassConnnect - Cuenta validada correctamente',
+      to: userUpdated.email,
+    })
 
     const payload = {
       id: user.id,
@@ -61,7 +101,12 @@ export class AuthService {
       throw CustomError.badRequest('El usuario ya esta verificado')
     }
 
-    await this.validateCodeService.generateValidationCode( user.id, email )
+    const code = await this.validateCodeService.generateValidationCode( user.id )
+
+    await this.emailSender.sendValidationCode({
+      to: user.email,
+      subject: 'ClassConnect - Valida tu correo electrónico',   
+    }, code )
 
   }
   

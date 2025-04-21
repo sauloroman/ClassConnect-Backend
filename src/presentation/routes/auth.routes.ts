@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authController } from "../../container";
+import { controllers } from "../../container";
 
 export class AuthRoutes {
 
@@ -7,8 +7,11 @@ export class AuthRoutes {
 
     const router = Router()
 
-    router.post('/validate-user', authController.validateAccount )
-    router.post('/resend-code', authController.resendValidationCode )
+    const { authController } = controllers
+
+    router.post('/login', authController.login )
+    router.post('/validate-account', authController.validateAccount )
+    router.post('/resend-verification-code', authController.resendValidationCode )
 
     return router
 

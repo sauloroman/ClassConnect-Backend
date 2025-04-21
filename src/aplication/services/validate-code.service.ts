@@ -1,36 +1,27 @@
-import { ValidateCodeRepository } from "../../domain/repositories/validate-code.reposity";
-import { EmailService } from "../../domain/services/email.service";
+import { ValidateCodeRepository } from "../../domain/repositories";
 import { StatusVerificationCode } from "../../shared/enums";
 import { cryptoAdapter } from "../../shared/plugins";
 
 interface ValidateCodeServiceOptions {
   duration: number,
   validateCodeRepo: ValidateCodeRepository,
-  emailSender: EmailService,
 }
 
 export class ValidateCodeService {
 
   private readonly activeCodeDurationInMinutes: number
   private readonly validateCodeRepo: ValidateCodeRepository
-  private readonly emailSender: EmailService
 
-  constructor({ emailSender, validateCodeRepo, duration }: ValidateCodeServiceOptions){
+  constructor({ validateCodeRepo, duration }: ValidateCodeServiceOptions){
     this.validateCodeRepo = validateCodeRepo
-    this.emailSender = emailSender
     this.activeCodeDurationInMinutes = duration
   }
 
-  async generateValidationCode( userId: string, userEmail: string ): Promise<void> {
+  async generateValidationCode( userId: string ): Promise<string> {
     const code = cryptoAdapter.generateSecureCode(5)
-    
     await this.validateCodeRepo.deleteByUserId( userId )
     await this.validateCodeRepo.createCode({ code, userId })
-
-    await this.emailSender.sendValidationCode({
-      to: userEmail,
-      subject: 'ClassConnect - Valida tu correo electrónico',   
-    }, code )
+    return code
   }
 
   async verifyCodeStatus( userId: string, code: string ): Promise<StatusVerificationCode> {

@@ -1,6 +1,7 @@
 import { CreateUserDto } from '../../domain/dtos/user';
 import { UserEntity } from '../../domain/entities';
-import { UserRepository } from '../../domain/repositories/user.repository';
+import { UserRepository } from '../../domain/repositories';
+import { EmailService } from '../../domain/services/email.service';
 import { ValidateCodeService } from './validate-code.service';
 import { CustomError } from '../../shared/errors';
 import { bcryptAdapter } from '../../shared/plugins';
@@ -8,14 +9,17 @@ import { bcryptAdapter } from '../../shared/plugins';
 interface UserServiceOptions {
   userRepo: UserRepository;
   validateCodeService: ValidateCodeService;
+  emailSender: EmailService;
 }
 
 export class UserService {
   private readonly userRepo: UserRepository;
   private readonly validateCodeService: ValidateCodeService;
+  private readonly emailSender: EmailService;
 
-  constructor({ userRepo, validateCodeService }: UserServiceOptions) {
+  constructor({ userRepo, emailSender, validateCodeService }: UserServiceOptions) {
     this.userRepo = userRepo;
+    this.emailSender = emailSender
     this.validateCodeService = validateCodeService;
   }
 
@@ -32,7 +36,12 @@ export class UserService {
     user.password = bcryptAdapter.hash(user.password);
     await this.userRepo.updateUser(user.id, { password: user.password });
 
-    await this.validateCodeService.generateValidationCode(user.id, dto.email);
+    const code = await this.validateCodeService.generateValidationCode(user.id);
+
+    await this.emailSender.sendValidationCode({
+      to: user.email,
+      subject: 'ClassConnect - Valida tu correo electrónico',   
+    }, code )
 
     return user
   }
