@@ -8,7 +8,7 @@ export class LoginDto {
   ){}
   
   private static validateEmptyValue( name: string, value: string ): string | null {
-    if ( value.trim().length == 0 ) return `${name} es necesario`
+    if ( value === '' || value === undefined ) return `${name} es necesario`
     return null
   }
 

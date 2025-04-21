@@ -21,12 +21,13 @@ export class AuthController {
   public login = ( req: Request, res: Response ): any => {
 
     const [ dto, errorMessage ] = LoginDto.create( req.body )
+    const sessionInfo = req.body.sessionInfo
 
     if (errorMessage) {
       return res.status(400).json({ ok: false, error: errorMessage });
     }
 
-    this.authService.login( dto! )
+    this.authService.login( dto!, sessionInfo )
       .then( ({ user, token }) => {
         res.status(200).json({
           ok: true,

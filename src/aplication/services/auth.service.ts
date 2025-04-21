@@ -1,4 +1,4 @@
-import { UserEntity } from "../../domain/entities"
+import { LoginSessionEntity, UserEntity } from "../../domain/entities"
 import { ValidateUserDto } from "../../domain/dtos/user"
 import { LoginDto } from "../../domain/dtos/auth"
 import { UserRepository } from "../../domain/repositories"
@@ -7,26 +7,30 @@ import { ValidateCodeService } from "./validate-code.service"
 import { StatusVerificationCode } from "../../shared/enums"
 import { CustomError } from "../../shared/errors"
 import { bcryptAdapter, jwtAdapter } from "../../shared/plugins"
+import { LoginSessionService } from "./login-session.service"
 
 interface AuthServiceOptions {
   userRepo: UserRepository,
   validateCodeService: ValidateCodeService,
+  loginSessionService: LoginSessionService,
   emailSender: EmailService,
 }
 
 export class AuthService {
 
   private readonly userRepo: UserRepository
+  private readonly loginSessionService: LoginSessionService
   private readonly validateCodeService: ValidateCodeService
   private readonly emailSender: EmailService
 
-  constructor({ userRepo, validateCodeService, emailSender }: AuthServiceOptions) {
+  constructor({ userRepo, loginSessionService, validateCodeService, emailSender }: AuthServiceOptions) {
     this.userRepo = userRepo
+    this.loginSessionService = loginSessionService
     this.emailSender = emailSender
     this.validateCodeService = validateCodeService
   }
 
-  async login( loginDto: LoginDto ): Promise<{ user: UserEntity, token: unknown }> {
+  async login( loginDto: LoginDto, sessionInfo: Partial<LoginSessionEntity> ): Promise<{ user: UserEntity, token: unknown }> {
 
     const { email, password } = loginDto
 
@@ -38,6 +42,8 @@ export class AuthService {
  
     const isPasswordCorrect = bcryptAdapter.compare( password, user.password )
     if ( !isPasswordCorrect ) throw CustomError.badRequest('Las credenciales no son correctas')
+
+    await this.loginSessionService.registerLoginSession({ userId: user.id, ...sessionInfo })
 
     const payload = {
       id: user.id,

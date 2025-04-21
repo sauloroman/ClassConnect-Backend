@@ -1,16 +1,17 @@
-import { UserRepository } from "../domain/repositories/user.repository";
-import { ValidateCodeRepository } from "../domain/repositories/validate-code.reposity";
-import { PrismaUserRepository, PrismaValidateCodeRepository } from "../infrastructure/repositories";
+import { LoginSessionRepository, UserRepository, ValidateCodeRepository } from "../domain/repositories";
+import { PrismaLoginSessionRepository, PrismaUserRepository, PrismaValidateCodeRepository } from "../infrastructure/repositories";
 
 export class RepositoriesContainer {
 
   private static instance: RepositoriesContainer
   public readonly userRepo: UserRepository
   public readonly validateCodeRepo: ValidateCodeRepository
-
+  public readonly loginSessionRepo: LoginSessionRepository
+  
   private constructor(){
     this.userRepo = new PrismaUserRepository()
     this.validateCodeRepo = new PrismaValidateCodeRepository()
+    this.loginSessionRepo = new PrismaLoginSessionRepository()
   }
 
   public static getInstance(): RepositoriesContainer {
