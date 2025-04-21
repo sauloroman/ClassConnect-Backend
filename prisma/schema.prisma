@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+enum Roles {
+  admin
+  teacher
+  student
+}
+
+enum EnrollmentStatus {
+  enrolled
+  removed
+}
+
+enum ResourceType {
+  file
+  link
+  video
+  document
+  pdf
+  audio
+  other
+}
+
+enum SubmissionStatus {
+  unopened
+  seen
+  submited
+}
+
+model Users {
+  id String @id @default(uuid())
+  firstName String @db.VarChar(200)
+  lastName String @db.VarChar(200)
+  email String @unique
+  password String @db.VarChar(255)
+  role Roles
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  phoneNumber String? @db.VarChar(11)
+  avatarUrl String?
+  bio String? 
+  isActive Boolean @default(true)
+  isAccountVerified Boolean @default(false)
+
+  validateCodes ValidateAccountCode[]
+  loginSession LoginSession[]
+}
+
+model ValidateAccountCode {
+  id String @id @default(uuid())
+  code String 
+  createdAt DateTime @default(now())
+  
+  userId String
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LoginSession {
+  id String @id @default(uuid())
+  createdAt DateTime @default(now())
+  ip String?
+  browser String?
+  os String?
+  device String?
+  
+  userId String 
+  user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
