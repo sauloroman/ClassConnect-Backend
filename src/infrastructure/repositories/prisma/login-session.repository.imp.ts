@@ -10,5 +10,12 @@ export class PrismaLoginSessionRepository implements LoginSessionRepository {
     const loginSessionEntity = LoginSessionEntity.fromObject( loginSessionCreated )
     return loginSessionEntity
   }
+
+  async getRecordsByUserId(userId: string): Promise<LoginSessionEntity[] | null> {
+    const records = await prismaClient.loginSession.findMany({ where: { userId }})
+    if ( records.length === 0 ) return []
+    const recordsEntity = records.map( LoginSessionEntity.fromObject )
+    return recordsEntity
+  }
   
 }

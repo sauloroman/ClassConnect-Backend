@@ -111,4 +111,20 @@ export class AuthController {
 
   }
 
+  public getUserLoginSessions = (req: Request, res: Response): any => {
+
+    const { userId } = req.params
+
+    this.authService.getUserLoginSessions( userId )
+      .then( (data) => {
+        res.status(200).json({
+          ok: true,
+          msg: `Inicios de sesion del usuario: ${userId}`,
+          loginSessions: data
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ))
+
+  } 
+
 }

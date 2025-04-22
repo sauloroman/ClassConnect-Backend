@@ -147,5 +147,15 @@ export class AuthService {
     }, code )
 
   }
+
+  async getUserLoginSessions( userId: string ): Promise<LoginSessionEntity[] | null> {
+
+    const user = await this.userRepo.findById( userId )
+    if ( !user ) throw CustomError.notFound(`El usuario con id: ${userId} no existe`)
+
+    const loginSession = await this.loginSessionService.getLoginSessionsById( userId )
+
+    return loginSession
+  }
   
 }
