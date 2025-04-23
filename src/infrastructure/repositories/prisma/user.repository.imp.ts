@@ -39,4 +39,19 @@ export class PrismaUserRepository implements UserRepository {
     await prismaClient.users.delete({ where: { id } })
   }
 
+  async getAllUsers( offset: number, limit: number ): Promise<UserEntity[]> {
+    const users = await prismaClient.users.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: 'desc' }
+    })
+
+    const usersEntity = users.map(UserEntity.fromObject)
+    return usersEntity
+  }
+
+  async countUsers(): Promise<number> {
+    return await prismaClient.users.count()
+  }
+
 }

@@ -12,9 +12,9 @@ export class AuthRoutes {
 
     //* PRIVATE ROUTES
     router.get('/renew-token', [ AuthMiddleware.validateJWT ], authController.renewToken )
+    router.get('/login-session/:userId', [AuthMiddleware.validateJWT], authController.getUserLoginSessions )
     
     //* PUBLIC ROUTES
-    router.get('/login-session/:userId', authController.getUserLoginSessions )
     router.post('/login', [ AuthMiddleware.sessionLogger ], authController.login )
     router.post('/validate-account', authController.validateAccount )
     router.post('/resend-verification-code', authController.resendValidationCode )
