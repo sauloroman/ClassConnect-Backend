@@ -2,6 +2,7 @@ import { envs } from "../shared/plugins";
 import { NodemailerService } from "../infrastructure/services/email/nodemailer.service";
 import { AuthService, ClassroomService, LoginSessionService, UserService, ValidateCodeService } from "../aplication/services";
 import { RepositoriesContainer } from "./repositories.container";
+import { QRCodeServiceImp } from "../infrastructure/services/qr-code/qr-code.service";
 
 const { userRepo, validateCodeRepo, loginSessionRepo, classroomRepo } = RepositoriesContainer.getInstance()
 
@@ -32,4 +33,6 @@ export const authService = new AuthService({
   validateCodeService: validateCodeService
 })
 
-export const classroomService = new ClassroomService({ classroomRepo })
+export const qrCodeService = new QRCodeServiceImp()
+
+export const classroomService = new ClassroomService({ classroomRepo, qrCodeService })

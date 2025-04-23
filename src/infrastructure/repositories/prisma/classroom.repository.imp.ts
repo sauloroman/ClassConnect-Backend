@@ -2,6 +2,7 @@ import { ClassroomEntity } from "../../../domain/entities";
 import { ClassroomRepository } from "../../../domain/repositories";
 import { IClassroom } from "../../../domain/interfaces";
 import { prismaClient } from "../../database/prisma/prisma-client";
+import { UpdateClassroomDto } from "../../../domain/dtos/classroom";
 
 export class PrismaClassroomRepository implements ClassroomRepository {
 
@@ -15,6 +16,20 @@ export class PrismaClassroomRepository implements ClassroomRepository {
     const existing = await prismaClient.classroom.findFirst({ where: { code }})
     if ( !existing ) return false
     return true
+  }
+
+  async getClassroomById(id: string): Promise<ClassroomEntity | null> {
+    const classroom = await prismaClient.classroom.findUnique({ where: { id }})
+    if ( !classroom ) return null
+    return ClassroomEntity.fromObject( classroom )
+  } 
+
+  async updateClassroom( id: string, updateClassroomDto: UpdateClassroomDto): Promise<ClassroomEntity> {
+    const classroomUpdated = await prismaClient.classroom.update({ 
+      where: { id }, 
+      data: { ...updateClassroomDto }
+    })
+    return ClassroomEntity.fromObject( classroomUpdated )
   }
 
 }

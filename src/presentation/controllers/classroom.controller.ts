@@ -39,4 +39,14 @@ export class ClassroomController {
 
   }  
 
+  public getQrCodeForClassroom = ( req: Request, res: Response ): any => {
+
+    const { classroomId } = req.params
+
+    this.classroomService.createQRCodeForClassroom( classroomId )
+      .then()
+      .catch( err => this.handleErrorResponse( err, res ))
+
+  }
+
 }

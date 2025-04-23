@@ -10,10 +10,10 @@ export class ClassroomRoutes {
 
     const { classroomController } = controllers
 
-    router.post('/', [ 
-      AuthMiddleware.validateJWT, 
-      RolesMiddleware.allowRoles([ Roles.TEACHER ]) 
-    ], classroomController.postClassroom )
+    router.use([ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.TEACHER ])])
+
+    router.post('/', classroomController.postClassroom )
+    // router.get('/create-qrcode/:classroomId', )
 
     return router
   }

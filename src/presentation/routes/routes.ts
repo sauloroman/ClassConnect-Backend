@@ -11,7 +11,7 @@ export class RouterApp {
 
     router.use('/api/users', UserRoutes.routes )
     router.use('/api/auth', AuthRoutes.routes )
-    router.use('/api/classroom', ClassroomRoutes.routes )
+    router.use('/api/classrooms', ClassroomRoutes.routes )
 
     return router
 

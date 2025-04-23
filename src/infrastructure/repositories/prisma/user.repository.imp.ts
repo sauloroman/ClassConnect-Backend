@@ -29,7 +29,7 @@ export class PrismaUserRepository implements UserRepository {
     return user
   }
 
-  async updateUser(id: string, dto: Partial<UpdateUserDto>): Promise<UserEntity> {    
+  async updateUser(id: string, dto: UpdateUserDto): Promise<UserEntity> {    
     const userUpdated = await prismaClient.users.update({ where: { id }, data: { ...dto }})
     const user = UserEntity.fromObject( userUpdated )
     return user

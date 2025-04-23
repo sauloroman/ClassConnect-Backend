@@ -96,6 +96,8 @@ model Classroom {
   updatedAt DateTime? 
   description String?
   img String?
+  color String?
+  qrCode String?
 
   instructorId String
   instructor Users @relation(fields: [instructorId], references: [id], onDelete: Cascade)
