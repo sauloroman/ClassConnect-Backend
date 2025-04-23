@@ -2,6 +2,7 @@ import { Router } from "express";
 import { controllers } from "../../container";
 import { AuthMiddleware } from "../middlewares";
 import { RolesMiddleware } from "../middlewares/roles.middleware";
+import { Roles } from "../../shared/enums";
 
 export class UserRoutes {
 
@@ -12,7 +13,7 @@ export class UserRoutes {
     const { userController } = controllers
     
     //* PRIVATE ROUTES
-    router.get('/', [ AuthMiddleware.validateJWT, RolesMiddleware.isAdmin ], userController.getAllUsers )
+    router.get('/', [ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.ADMIN ]) ], userController.getAllUsers )
     router.put('/deactivate/:id', [ AuthMiddleware.validateJWT ], userController.deactivateUser )
     router.put('/update/:id', [ AuthMiddleware.validateJWT ], userController.updateUserInfo )
 

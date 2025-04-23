@@ -18,6 +18,8 @@ export const envs = {
   VERIFICATION_CODE_DURATION: env.get('VERIFICATION_CODE_DURATION').required().asIntPositive(),
 
   JWT_SEED: env.get('JWT_SEED').required().asString(),
+  
+  CLASSROOM_CODE_LENGTH: env.get('CLASSROOM_CODE_LENGTH').required().asInt(),
 
   FRONTEND_URL: env.get('FRONTEND_URL').required().asUrlString(),
 

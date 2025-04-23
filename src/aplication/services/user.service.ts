@@ -6,7 +6,7 @@ import { EmailService } from '../../domain/services/email.service';
 import { ValidateCodeService } from './validate-code.service';
 import { CustomError } from '../../shared/errors';
 import { bcryptAdapter } from '../../shared/plugins';
-import { PaginationResult } from '../../shared/interfaces/pagination-result.interface';
+import { PaginationResult } from '../../domain/interfaces/pagination-result.interface';
 import { buildPaginationMeta } from '../../shared/utils/pagination.util';
 
 interface UserServiceOptions {

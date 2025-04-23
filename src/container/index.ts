@@ -1,1 +1,1 @@
-export { controllers } from './services.container'
+export { controllers } from './controllers.container'

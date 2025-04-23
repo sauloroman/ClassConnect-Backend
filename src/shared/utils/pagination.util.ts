@@ -1,4 +1,4 @@
-import { PaginationOptions, PaginationResult } from "../interfaces/pagination-result.interface";
+import { PaginationOptions, PaginationResult } from "../../domain/interfaces";
 
 export const buildPaginationMeta = <T>( items: T[], options: PaginationOptions ): PaginationResult<T> => {
 

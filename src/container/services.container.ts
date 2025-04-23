@@ -1,10 +1,9 @@
 import { envs } from "../shared/plugins";
 import { NodemailerService } from "../infrastructure/services/email/nodemailer.service";
-import { AuthService, LoginSessionService, UserService, ValidateCodeService } from "../aplication/services";
-import { AuthController, UserControllers } from "../presentation/controllers";
+import { AuthService, ClassroomService, LoginSessionService, UserService, ValidateCodeService } from "../aplication/services";
 import { RepositoriesContainer } from "./repositories.container";
 
-const { userRepo, validateCodeRepo, loginSessionRepo } = RepositoriesContainer.getInstance()
+const { userRepo, validateCodeRepo, loginSessionRepo, classroomRepo } = RepositoriesContainer.getInstance()
 
 export const emailService = new NodemailerService({
   mailerService: envs.MAILER_SERVICE,
@@ -33,7 +32,4 @@ export const authService = new AuthService({
   validateCodeService: validateCodeService
 })
 
-export const controllers = {
-  userController: new UserControllers( userService ),
-  authController: new AuthController( authService )
-}
+export const classroomService = new ClassroomService({ classroomRepo })
