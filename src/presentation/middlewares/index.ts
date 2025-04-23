@@ -1,1 +1,1 @@
-export { LoginSessionMiddleware } from './login-session.middleware'
+export { AuthMiddleware } from './auth.middleware'

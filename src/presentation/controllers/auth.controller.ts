@@ -127,4 +127,20 @@ export class AuthController {
 
   } 
 
+  public renewToken = (req: Request, res: Response): any => {
+
+    const { user } = req.body
+
+    this.authService.renewToken( user )
+      .then( ({ user, token }) => {
+        res.status(200).json({
+          ok: true,
+          user,
+          token
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ) )
+
+  }
+
 }

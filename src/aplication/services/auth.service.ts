@@ -83,11 +83,10 @@ export class AuthService {
     const newPasswordHashed = bcryptAdapter.hash( newPassword )
     await this.userRepo.updateUser( user.id, { password: newPasswordHashed } )
 
-    // TODO: Implementar changeAccountPassword template
-    // await this.emailSender.sendChangedPasswordEmail({
-    //   subject: 'ClassConnnect - Cambio de contraseña',
-    //   to: user.email,
-    // })
+    await this.emailSender.sendChangedPasswordEmail({
+      subject: 'ClassConnnect - Cambio de contraseña',
+      to: user.email,
+    })
 
   }
 
@@ -152,10 +151,24 @@ export class AuthService {
 
     const user = await this.userRepo.findById( userId )
     if ( !user ) throw CustomError.notFound(`El usuario con id: ${userId} no existe`)
-
+    
     const loginSession = await this.loginSessionService.getLoginSessionsById( userId )
-
     return loginSession
   }
-  
+ 
+  async renewToken( user: UserEntity ): Promise<{ user: UserEntity, token: unknown }> {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    }
+
+    const newToken = await jwtAdapter.generateJWT( payload )
+
+    return {
+      user: user,
+      token: newToken
+    }
+  }
+
 }

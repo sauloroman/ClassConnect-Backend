@@ -73,5 +73,6 @@ model LoginSession {
   
   userId String 
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
-
 }
+
+

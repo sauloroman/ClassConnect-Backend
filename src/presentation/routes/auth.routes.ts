@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { controllers } from "../../container";
-import { LoginSessionMiddleware } from "../middlewares";
+import { AuthMiddleware } from "../middlewares";
 
 export class AuthRoutes {
 
@@ -11,11 +11,11 @@ export class AuthRoutes {
     const { authController } = controllers
 
     //* PRIVATE ROUTES
-    // TODO: Realizar middlerawe de autenticacion
-    router.get('/login-session/:userId', authController.getUserLoginSessions )
+    router.get('/renew-token', [ AuthMiddleware.validateJWT ], authController.renewToken )
     
     //* PUBLIC ROUTES
-    router.post('/login', [ LoginSessionMiddleware.sessionLogger ], authController.login )
+    router.get('/login-session/:userId', authController.getUserLoginSessions )
+    router.post('/login', [ AuthMiddleware.sessionLogger ], authController.login )
     router.post('/validate-account', authController.validateAccount )
     router.post('/resend-verification-code', authController.resendValidationCode )
     router.post('/forgot-password', authController.forgotPassword )
