@@ -59,7 +59,10 @@ export class UserService {
       subject: 'ClassConnect - Valida tu correo electrónico',   
     }, code )
 
-    return user
+    return { 
+      ...user,
+      password: ''
+    }
   }
 
   async updateUserInfo( id: string, updateUserDto: UpdateUserDto ): Promise<UserEntity> {

@@ -52,6 +52,9 @@ model Users {
 
   validateCodes ValidateAccountCode[]
   loginSession LoginSession[]
+  classRooms Classroom[]
+  favoriteClassrooms FavoriteClassrooms[]
+  enrollments Enrollment[]
 }
 
 model ValidateAccountCode {
@@ -75,4 +78,41 @@ model LoginSession {
   user Users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model FavoriteClassrooms {
+  id String @id @default(uuid())
+  
+  userId String
+  user Users @relation( fields: [userId], references: [id], onDelete: Cascade)
 
+  classroomId String
+  classroom Classroom @relation( fields: [classroomId], references: [id], onDelete: Cascade )
+}
+
+model Classroom {
+  id String @id @default(uuid())
+  title String @db.VarChar(200)
+  code String @unique @db.VarChar(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime? 
+  description String?
+  img String?
+
+  instructorId String
+  instructor Users @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+
+  favoriteClassrooms FavoriteClassrooms[]
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id String @id @default(uuid())
+  status EnrollmentStatus
+  progress Float @default(0.0)
+  joinedAt DateTime @default(now())
+
+  studentId String
+  student Users @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  classroomId String
+  classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+}

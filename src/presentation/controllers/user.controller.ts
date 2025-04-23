@@ -33,7 +33,7 @@ export class UserControllers {
       .then( user => {
         res.status(201).json({
           ok: true,
-          msg: 'Usuario creado correctamente',
+          msg: `Se ha enviado un correo electrónico a: ${user.email}. Revisa tu bandeja de entrada para validar tu correo.`,
           user,
         })
       }) 

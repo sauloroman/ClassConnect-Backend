@@ -6,7 +6,6 @@ export const buildPaginationMeta = <T>( items: T[], options: PaginationOptions )
   const totalPages = Math.ceil( totalItems / limit )
 
   return  {
-    items,
     meta: {
       currentPage: page,
       nextPage: page < totalPages ? page + 1 : null,
@@ -14,7 +13,8 @@ export const buildPaginationMeta = <T>( items: T[], options: PaginationOptions )
       totalItems,
       totalPages,
       limit,
-    }
+    },
+    items,
   }
 
 }
