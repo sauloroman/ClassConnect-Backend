@@ -1,5 +1,5 @@
 import { UpdateUserDto, CreateUserDto } from "../dtos/user";
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities';
 
 export abstract class UserRepository {
   abstract createUser( dto: CreateUserDto ): Promise<UserEntity>

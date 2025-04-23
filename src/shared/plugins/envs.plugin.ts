@@ -21,6 +21,8 @@ export const envs = {
   
   CLASSROOM_CODE_LENGTH: env.get('CLASSROOM_CODE_LENGTH').required().asInt(),
 
-  FRONTEND_URL: env.get('FRONTEND_URL').required().asUrlString(),
+  CLOUDINARY_URL: env.get('CLOUDINARY_URL').required().asString(),
+
+  FRONTEND_URL: env.get('FRONTEND_URL').required().asString(),
 
 }

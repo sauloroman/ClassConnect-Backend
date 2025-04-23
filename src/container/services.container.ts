@@ -3,6 +3,7 @@ import { NodemailerService } from "../infrastructure/services/email/nodemailer.s
 import { AuthService, ClassroomService, LoginSessionService, UserService, ValidateCodeService } from "../aplication/services";
 import { RepositoriesContainer } from "./repositories.container";
 import { QRCodeServiceImp } from "../infrastructure/services/qr-code/qr-code.service";
+import { CloudinaryFileUploadService } from "../infrastructure/services/upload-file/cloudinary.service";
 
 const { userRepo, validateCodeRepo, loginSessionRepo, classroomRepo } = RepositoriesContainer.getInstance()
 
@@ -33,6 +34,10 @@ export const authService = new AuthService({
   validateCodeService: validateCodeService
 })
 
-export const qrCodeService = new QRCodeServiceImp()
+export const fileUploadService = new CloudinaryFileUploadService()
+
+export const qrCodeService = new QRCodeServiceImp({ 
+  fileUploaderService: fileUploadService,
+})
 
 export const classroomService = new ClassroomService({ classroomRepo, qrCodeService })

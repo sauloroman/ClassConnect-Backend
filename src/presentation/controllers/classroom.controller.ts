@@ -44,7 +44,13 @@ export class ClassroomController {
     const { classroomId } = req.params
 
     this.classroomService.createQRCodeForClassroom( classroomId )
-      .then()
+      .then( qrCodeUrl => {
+        res.status(200).json({
+          ok: true,
+          msg: 'El codigo qr asociado a este classroom ha sido creado exitosamente',
+          qrCodeUrl,
+        })
+      })
       .catch( err => this.handleErrorResponse( err, res ))
 
   }

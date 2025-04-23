@@ -13,7 +13,7 @@ export class ClassroomRoutes {
     router.use([ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.TEACHER ])])
 
     router.post('/', classroomController.postClassroom )
-    // router.get('/create-qrcode/:classroomId', )
+    router.get('/create-qrcode/:classroomId', classroomController.getQrCodeForClassroom )
 
     return router
   }

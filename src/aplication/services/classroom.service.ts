@@ -37,21 +37,24 @@ export class ClassroomService {
 
   }
 
-  public async createQRCodeForClassroom( classroomId: string ): Promise<ClassroomEntity> {
+  public async createQRCodeForClassroom( classroomId: string ): Promise<string> {
 
     const classroom = await this.classroomRepo.getClassroomById( classroomId )
     if ( !classroom ) throw CustomError.notFound(`El classroom con id ${classroomId} no existe`)
 
-    const qrCode = await this.qrCodeService.createQRCode<{ classroom: string, title: string }>({ 
+    const qrCodeData =  {
       classroom: classroom.id,
       title: classroom.title
-    })
+    }
 
-    const qrCodeUrl = await this.qrCodeService.uploadQRCode( qrCode )
+    const qrCodeUrl = await this.qrCodeService.generateQRCodeUrl<{classroom: string, title: string}>(
+      qrCodeData,
+      `/classconnect/classrooms/${classroom.id}` 
+    )
 
-    const classRoomUpdated = await this.classroomRepo.updateClassroom( classroom.id, { qrCode: qrCodeUrl } )
+    await this.classroomRepo.updateClassroom( classroom.id, { qrCode: qrCodeUrl } )
 
-    return classRoomUpdated
+    return qrCodeUrl
 
   }
 
