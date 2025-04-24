@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ClassroomService } from "../../aplication/services";
 import { CreateClassroomDto } from "../../domain/dtos/classroom";
 import { CustomError } from "../../shared/errors";
+import { PaginationDto } from "../../domain/dtos/shared";
 
 export class ClassroomController {
 
@@ -72,5 +73,27 @@ export class ClassroomController {
       .catch( err => this.handleErrorResponse( err, res ))
 
   }
+
+  public getClassroomsOfInstructor = ( req: Request, res: Response ): any => {
+
+    const { page, limit } = req.query
+    const [ paginationDto, errorMessage ] = PaginationDto.create( +page!, +limit! )
+    const { instructorId } = req.params
+
+    if ( errorMessage ) {
+      return res.status(400).json({ ok: false, error: errorMessage })
+    }
+
+    this.classroomService.getClassroomsByInstructorId( paginationDto!, instructorId )
+      .then( pagination => {
+        res.status(200).json({
+          ok: true,
+          ...pagination,
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ))
+
+
+  } 
 
 }

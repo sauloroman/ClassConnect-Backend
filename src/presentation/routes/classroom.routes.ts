@@ -27,6 +27,15 @@ export class ClassroomRoutes {
       classroomController.postClassroom 
     )
 
+    router.get('/instructor/:instructorId', 
+      [ 
+        AuthMiddleware.validateJWT ,
+        RolesMiddleware.allowRoles([ Roles.TEACHER, Roles.ADMIN ]),
+        AuthMiddleware.isTeacherAuthorized,
+      ], 
+      classroomController.getClassroomsOfInstructor 
+    )
+
     router.put('/create-qrcode/:classroomId', 
       [
         AuthMiddleware.validateJWT, 

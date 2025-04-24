@@ -32,4 +32,26 @@ export class PrismaClassroomRepository implements ClassroomRepository {
     return ClassroomEntity.fromObject( classroomUpdated )
   }
 
+  async getClassroomsByInstructorId(
+    instructorId: string, 
+    offset: number, 
+    limit: number
+  ): Promise<ClassroomEntity[]> {
+    
+    const classrooms = await prismaClient.classroom.findMany({ 
+      where: { instructorId },
+      skip: offset,
+      take: limit,
+      orderBy: { createdAt: 'desc' }
+    })
+
+    const classroomsEntities = classrooms.map( ClassroomEntity.fromObject )
+    return classroomsEntities
+
+  }
+
+  async countClassroomsOfInstructor(instructorId: string): Promise<number> {
+    return await prismaClient.classroom.count({ where: {instructorId} })
+  }
+
 }

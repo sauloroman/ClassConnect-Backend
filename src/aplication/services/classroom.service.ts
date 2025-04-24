@@ -1,11 +1,12 @@
 import { ClassroomEntity } from "../../domain/entities";
 import { CreateClassroomDto } from '../../domain/dtos/classroom';
+import { PaginationDto } from "../../domain/dtos/shared";
 import { ClassroomRepository } from "../../domain/repositories";
 import { QRCodeService, FileUploadService } from "../../domain/services";
 
 import { getIdAdapter } from "../../shared/plugins";
 import { CustomError } from "../../shared/errors";
-import { extractClassroomUUIDFromUrl } from "../../shared/utils";
+import { buildPaginationMeta, extractClassroomUUIDFromUrl } from "../../shared/utils";
 import { UploadedFile } from "express-fileupload";
 
 interface ClassroomServiceOptions {
@@ -40,6 +41,27 @@ export class ClassroomService {
     })
 
     return classroom
+  }
+
+  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ) {
+
+    const { limit, page } = paginationDto
+    const skip = ( page - 1 ) * limit
+
+    const [ classroomsOfInstructor, totalClassroomsOfInstructor ] = await Promise.all([
+      await this.classroomRepo.getClassroomsByInstructorId( 
+        instructorId, 
+        skip, 
+        limit 
+      ),
+      await this.classroomRepo.countClassroomsOfInstructor( instructorId )
+    ])
+    
+    return buildPaginationMeta( classroomsOfInstructor, { 
+      page, 
+      limit, 
+      totalItems: totalClassroomsOfInstructor 
+    })
 
   }
 
