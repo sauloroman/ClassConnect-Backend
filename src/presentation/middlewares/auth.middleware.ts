@@ -43,21 +43,4 @@ export class AuthMiddleware {
       res.status(500).json({ ok: false, error: 'Internal Server Error'})
     }
   }
-
-  public static isTeacherAuthorized ( req: Request, res: Response, next: NextFunction ): any {
-    const { user } = req.body 
-    
-    if ( user.role === Roles.ADMIN ) {
-      return next()
-    }
-
-    const { instructorId } = req.params
-
-    if ( user.role === Roles.TEACHER && user.id !== instructorId ) {
-      return res.status(401).json({ ok: false, error: 'No estas autorizado para realizar esta accion'})
-    }
-
-    next()
-  }
-
 }

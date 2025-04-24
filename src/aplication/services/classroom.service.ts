@@ -1,16 +1,18 @@
-import { ClassroomEntity } from "../../domain/entities";
+import { ClassroomEntity, EnrollmentEntity } from "../../domain/entities";
 import { CreateClassroomDto } from '../../domain/dtos/classroom';
 import { PaginationDto } from "../../domain/dtos/shared";
-import { ClassroomRepository } from "../../domain/repositories";
+import { ClassroomRepository, EnrollmentRepository } from "../../domain/repositories";
 import { QRCodeService, FileUploadService } from "../../domain/services";
 
 import { getIdAdapter } from "../../shared/plugins";
 import { CustomError } from "../../shared/errors";
 import { buildPaginationMeta, extractClassroomUUIDFromUrl } from "../../shared/utils";
 import { UploadedFile } from "express-fileupload";
+import { JoinStudentDto } from '../../domain/dtos/classroom/join-student.dto';
 
 interface ClassroomServiceOptions {
   classroomRepo: ClassroomRepository
+  enrollmentRepo: EnrollmentRepository,
   qrCodeService: QRCodeService,
   fileUploadService: FileUploadService
 }
@@ -18,11 +20,13 @@ interface ClassroomServiceOptions {
 export class ClassroomService {
 
   private readonly classroomRepo: ClassroomRepository
+  private readonly enrollmentRepo: EnrollmentRepository
   private readonly qrCodeService: QRCodeService
   private readonly fileUploadService: FileUploadService
 
-  constructor( { classroomRepo, qrCodeService, fileUploadService }: ClassroomServiceOptions ) {
+  constructor( { classroomRepo, enrollmentRepo, qrCodeService, fileUploadService }: ClassroomServiceOptions ) {
     this.classroomRepo = classroomRepo
+    this.enrollmentRepo = enrollmentRepo
     this.qrCodeService = qrCodeService
     this.fileUploadService = fileUploadService
   }
@@ -39,6 +43,9 @@ export class ClassroomService {
       code,
       instructorId: userId
     })
+
+    const enrollment = await this.enrollmentRepo.joinStudent( userId, classroom.id )
+    await this.enrollmentRepo.updateEnrollment( enrollment.id, { progress: 100.0 } )
 
     return classroom
   }
@@ -117,5 +124,17 @@ export class ClassroomService {
     return qrCodeUrl
   }
 
+  public async joinStudentToClassroom( joinStudentDto: JoinStudentDto, userId: string ): Promise<EnrollmentEntity> {
+
+    const { code } = joinStudentDto
+
+    const classroom = await this.classroomRepo.getClassroomByCode( code )
+    if ( !classroom ) throw CustomError.notFound(`El classroom con codigo ${code} no existe`)
+
+    if ( await this.enrollmentRepo.isStudentInClassroom( userId, classroom.id ) ) 
+      throw CustomError.badRequest('El estudiante ya pertenece al aula')
+
+    return await this.enrollmentRepo.joinStudent( userId, classroom.id )
+  } 
 
 }

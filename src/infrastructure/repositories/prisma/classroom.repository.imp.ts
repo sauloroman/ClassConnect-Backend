@@ -24,6 +24,12 @@ export class PrismaClassroomRepository implements ClassroomRepository {
     return ClassroomEntity.fromObject( classroom )
   } 
 
+  async getClassroomByCode(code: string): Promise<ClassroomEntity | null> {
+    const classroom = await prismaClient.classroom.findFirst({ where: { code }})
+    if ( !classroom ) return null
+    return ClassroomEntity.fromObject( classroom )
+  }
+
   async updateClassroom( id: string, updateClassroomDto: UpdateClassroomDto): Promise<ClassroomEntity> {
     const classroomUpdated = await prismaClient.classroom.update({ 
       where: { id }, 

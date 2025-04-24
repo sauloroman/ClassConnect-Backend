@@ -108,7 +108,7 @@ model Classroom {
 
 model Enrollment {
   id String @id @default(uuid())
-  status EnrollmentStatus
+  status EnrollmentStatus @default( enrolled )
   progress Float @default(0.0)
   joinedAt DateTime @default(now())
 

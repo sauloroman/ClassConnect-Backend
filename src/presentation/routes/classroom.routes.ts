@@ -10,6 +10,14 @@ export class ClassroomRoutes {
 
     const { classroomController } = controllers
 
+    router.post('/join-classroom/code',
+      [
+        AuthMiddleware.validateJWT,
+        RolesMiddleware.allowRoles([ Roles.TEACHER, Roles.STUDENT ])
+      ],
+      classroomController.joinStudent
+    )
+
     router.put('/upload/image/:classroomId', 
       [ 
         FileUploadMiddleware.validateContainFiles,
@@ -31,7 +39,7 @@ export class ClassroomRoutes {
       [ 
         AuthMiddleware.validateJWT ,
         RolesMiddleware.allowRoles([ Roles.TEACHER, Roles.ADMIN ]),
-        AuthMiddleware.isTeacherAuthorized,
+        RolesMiddleware.isTeacherAuthorized,
       ], 
       classroomController.getClassroomsOfInstructor 
     )

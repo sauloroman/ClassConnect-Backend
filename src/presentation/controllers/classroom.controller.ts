@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ClassroomService } from "../../aplication/services";
-import { CreateClassroomDto } from "../../domain/dtos/classroom";
+import { CreateClassroomDto, JoinStudentDto } from "../../domain/dtos/classroom";
 import { CustomError } from "../../shared/errors";
 import { PaginationDto } from "../../domain/dtos/shared";
 
@@ -92,7 +92,26 @@ export class ClassroomController {
         })
       })
       .catch( err => this.handleErrorResponse( err, res ))
+  } 
 
+  public joinStudent = ( req: Request, res: Response ): any => {
+
+    const { user } = req.body
+    const [ dto, errorMessage ] = JoinStudentDto.create( req.body )
+
+    if ( errorMessage ) {
+      return res.status(400).json({ ok: false, error: errorMessage })
+    }
+    
+    this.classroomService.joinStudentToClassroom( dto!, user.id )
+      .then( enrollment => {
+        res.status(201).json({
+          ok: true,
+          msg: `Te has unido exitosamente al grupo`,
+          enrollment,
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ) )
 
   } 
 
