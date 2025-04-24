@@ -55,4 +55,22 @@ export class ClassroomController {
 
   }
 
+  public uploadImageForClassroom = ( req: Request, res: Response ): any => {
+
+    const { files } = req.body
+    const image = files[0]
+    const { classroomId } = req.params
+
+    this.classroomService.uploadImageForClassroom( image, classroomId )
+      .then( data => {
+        res.status(200).json({
+          ok: true,
+          msg: `La imagen para el classroom ${data.title} se ha subido`,
+          data,
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ))
+
+  }
+
 }

@@ -40,4 +40,8 @@ export const qrCodeService = new QRCodeServiceImp({
   fileUploaderService: fileUploadService,
 })
 
-export const classroomService = new ClassroomService({ classroomRepo, qrCodeService })
+export const classroomService = new ClassroomService({ 
+  classroomRepo, 
+  qrCodeService,
+  fileUploadService
+})

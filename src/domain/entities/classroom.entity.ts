@@ -8,6 +8,7 @@ export class ClassroomEntity {
     public readonly code: string,
     public readonly createdAt: Date,
     public readonly instructorId: string,
+    public readonly qrCode?: string,
     public readonly updatedAt?: Date,
     public readonly description?: string,
     public readonly img?: string,
@@ -25,7 +26,7 @@ export class ClassroomEntity {
       }
     }
 
-    const { id, title, code, createdAt, instructorId, updatedAt, description, img } = obj
+    const { id, title, code, createdAt, instructorId, qrCode, updatedAt, description, img } = obj
 
     return new ClassroomEntity(
       id, 
@@ -33,6 +34,7 @@ export class ClassroomEntity {
       code,
       createdAt,
       instructorId,
+      qrCode,
       updatedAt,
       description,
       img

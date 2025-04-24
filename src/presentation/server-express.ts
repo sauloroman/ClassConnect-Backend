@@ -24,15 +24,16 @@ export class Server {
 
   public async start() {
 
-    this.app.use( cors() )
-    this.app.use( express.json() )
-    this.app.use( express.static( this.publicPath! ) )
-    this.app.use( express.urlencoded({extended: true}))
     this.app.use( fileUpload({
       limits: { fileSize: 50 * 1024 * 1024 },
       useTempFiles: true,
       tempFileDir: '/tmp/'
     }))
+
+    this.app.use( cors() )
+    this.app.use( express.json({}) )
+    this.app.use( express.static( this.publicPath! ) )
+    this.app.use( express.urlencoded({extended: true}))
 
     this.app.use( this.router )
 

@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { AuthMiddleware, RolesMiddleware } from "../middlewares";
+import { Request, Router } from "express";
+import { AuthMiddleware, FileUploadMiddleware, RolesMiddleware } from "../middlewares";
 import { Roles } from "../../shared/enums";
 import { controllers } from "../../container";
 
@@ -10,10 +10,30 @@ export class ClassroomRoutes {
 
     const { classroomController } = controllers
 
-    router.use([ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.TEACHER ])])
+    router.put('/upload/image/:classroomId', 
+      [ 
+        FileUploadMiddleware.validateContainFiles,
+        AuthMiddleware.validateJWT,
+        RolesMiddleware.allowRoles([ Roles.TEACHER ])
+      ], 
+      classroomController.uploadImageForClassroom 
+    )
 
-    router.post('/', classroomController.postClassroom )
-    router.get('/create-qrcode/:classroomId', classroomController.getQrCodeForClassroom )
+    router.post('/', 
+      [
+        AuthMiddleware.validateJWT, 
+        RolesMiddleware.allowRoles([ Roles.TEACHER ])
+      ],
+      classroomController.postClassroom 
+    )
+
+    router.put('/create-qrcode/:classroomId', 
+      [
+        AuthMiddleware.validateJWT, 
+        RolesMiddleware.allowRoles([ Roles.TEACHER ])
+      ],
+      classroomController.getQrCodeForClassroom 
+    )
 
     return router
   }

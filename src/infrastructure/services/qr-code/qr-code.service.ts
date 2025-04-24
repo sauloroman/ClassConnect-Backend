@@ -17,14 +17,11 @@ export class QRCodeServiceImp implements QRCodeService {
   }
 
   async createQRCode<T>( data: T ): Promise<{ nameQRCode: string, pathQRCode: unknown }> {
-
     const nameQRCode = getIdAdapter.uuid() + '.png'
-
     const pathQRCode = await QRCodeAdapter.generateCode<T>( 
       data, 
       nameQRCode,
     )
-
     return { nameQRCode, pathQRCode }
   }
 
@@ -32,12 +29,13 @@ export class QRCodeServiceImp implements QRCodeService {
     const qrCodeUrl = await this.fileUploaderService.uploadQRCodeGenerated( filePath, folder )
     return qrCodeUrl
   }
-
-  async generateQRCodeUrl<T>( data: T, folder: string ): Promise<string> {
-    const { nameQRCode, pathQRCode } = await this.createQRCode( data ) 
-    const qrCodeUrl = await this.uploadQRCode( pathQRCode, folder )
-    fs.unlinkSync( path.join( __dirname, '../../../../', nameQRCode ) )
-    return qrCodeUrl
+  
+  async deleteQRCodeInCloud(filePathInCloud: string): Promise<void> {
+    await this.fileUploaderService.destroyFile( filePathInCloud, 'image' )
+  }
+  
+  deleteQRCodeInServer(fileName: string): void {
+    fs.unlinkSync( path.join( __dirname, '../../../../', fileName ) )
   }
 
 }
