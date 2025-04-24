@@ -8,21 +8,27 @@ import { CustomError } from '../../shared/errors';
 import { bcryptAdapter } from '../../shared/plugins';
 import { PaginationResult } from '../../domain/interfaces/pagination-result.interface';
 import { buildPaginationMeta } from '../../shared/utils/pagination.util';
+import { UploadedFile } from 'express-fileupload';
+import { FileUploadService } from '../../domain/services';
+import { extractClassroomUUIDFromUrl } from '../../shared/utils';
 
 interface UserServiceOptions {
   userRepo: UserRepository;
   validateCodeService: ValidateCodeService;
   emailSender: EmailService;
+  fileUploadService: FileUploadService;
 }
 
 export class UserService {
   private readonly userRepo: UserRepository;
   private readonly validateCodeService: ValidateCodeService;
   private readonly emailSender: EmailService;
+  private readonly fileUploadService: FileUploadService
 
-  constructor({ userRepo, emailSender, validateCodeService }: UserServiceOptions) {
+  constructor({ userRepo, emailSender, fileUploadService, validateCodeService }: UserServiceOptions) {
     this.userRepo = userRepo;
     this.emailSender = emailSender
+    this.fileUploadService = fileUploadService
     this.validateCodeService = validateCodeService;
   }
 
@@ -63,6 +69,30 @@ export class UserService {
       ...user,
       password: ''
     }
+  }
+
+  async uploadUserImage( image: UploadedFile, userId: string ): Promise<string> {
+
+    const user = await this.userRepo.findById( userId )
+
+    if ( user?.avatarUrl ){
+      const avatarUrlId = extractClassroomUUIDFromUrl( user.avatarUrl )
+      await this.fileUploadService.destroyFile(
+        `classconnect/users/${user.id}/${avatarUrlId}`,
+        'image'
+      )
+    }
+
+    const avatarUrl = await this.fileUploadService.uploadFile( 
+      image, 
+      `/classconnect/users/${user?.id}`, 
+      ['jpg', 'jpeg', 'png', 'webp', 'avif'],
+      'image'
+    )
+
+    await this.userRepo.updateUser( user?.id!, { avatarUrl } )
+
+    return avatarUrl
   }
 
   async updateUserInfo( id: string, updateUserDto: UpdateUserDto ): Promise<UserEntity> {

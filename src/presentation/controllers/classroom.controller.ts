@@ -115,4 +115,26 @@ export class ClassroomController {
 
   } 
 
+  public getStudentInClassroom = ( req: Request, res: Response ): any => {
+
+    const { page, limit } = req.query
+    const [ paginationDto, errorMessage ] = PaginationDto.create( +page!, +limit! )
+    const { classroomId } = req.params
+
+    if ( errorMessage ) {
+      return res.status(400).json({ ok: false, erro: errorMessage })
+    }
+
+    this.classroomService.getStudentsInClassroom( paginationDto!, classroomId )
+      .then( pagination => {
+        res.status(200).json({
+          ok: true,
+          pagination
+        })
+      })
+      .catch( err => this.handleErrorResponse( err, res ) )
+
+  }
+
+
 }

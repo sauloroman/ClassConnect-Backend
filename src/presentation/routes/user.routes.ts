@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { controllers } from "../../container";
-import { AuthMiddleware } from "../middlewares";
+import { AuthMiddleware, FileUploadMiddleware } from "../middlewares";
 import { RolesMiddleware } from "../middlewares/roles.middleware";
 import { Roles } from "../../shared/enums";
 
@@ -13,6 +13,13 @@ export class UserRoutes {
     const { userController } = controllers
     
     //* PRIVATE ROUTES
+    router.put('/upload-image', 
+      [ 
+        FileUploadMiddleware.validateContainFiles,
+        AuthMiddleware.validateJWT 
+      ], 
+      userController.putUserImage 
+    )
     router.get('/', [ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.ADMIN ]) ], userController.getAllUsers )
     router.put('/deactivate/:id', [ AuthMiddleware.validateJWT ], userController.deactivateUser )
     router.put('/update/:id', [ AuthMiddleware.validateJWT ], userController.updateUserInfo )

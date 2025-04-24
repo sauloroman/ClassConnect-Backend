@@ -89,4 +89,22 @@ export class UserControllers {
 
   }
 
+  public putUserImage = ( req: Request, res: Response ): any => {
+    
+    const { files } = req.body
+    const image = files[0]
+    const { user } = req.body
+
+    this.userService.uploadUserImage( image, user.id )
+      .then( (avatarUrl) => {
+        res.status(200).json({
+          ok: true,
+          msg: 'La imagen se ha subido correctamente',
+          avatarUrl,
+        })
+      })
+      .catch( err => this.handleErrorResponse(err, res) )
+
+  }
+
 }

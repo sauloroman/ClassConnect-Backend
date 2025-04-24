@@ -10,6 +10,14 @@ export class ClassroomRoutes {
 
     const { classroomController } = controllers
 
+    router.get('/students/:classroomId', 
+      [
+        AuthMiddleware.validateJWT,
+        RolesMiddleware.canAccessToStudentsOfClassroom
+      ],
+      classroomController.getStudentInClassroom,
+    )
+
     router.post('/join-classroom/code',
       [
         AuthMiddleware.validateJWT,

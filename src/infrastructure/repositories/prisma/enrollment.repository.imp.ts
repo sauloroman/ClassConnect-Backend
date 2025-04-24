@@ -27,5 +27,20 @@ export class PrismaEnrollmentRepository implements EnrollmentRepository {
     return EnrollmentEntity.fromObject( enrollmentUpdated )
   }
 
+  async getStudentsOfClassroom( classroomId: string, offset: number, limit: number ): Promise<any[]> {
+
+    const students = await prismaClient.enrollment.findMany({
+      where: { classroomId },
+      skip: offset,
+      take: limit,
+      include: { student: true }
+    })  
+
+    return students
+  }
+
+  async countStudentsInClassroom( classroomId: string ): Promise<number> {
+    return await prismaClient.enrollment.count({ where: { classroomId }})
+  }
 
 }

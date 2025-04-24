@@ -1,4 +1,4 @@
-import { ClassroomEntity, EnrollmentEntity } from "../../domain/entities";
+import { ClassroomEntity, EnrollmentEntity, UserEntity } from "../../domain/entities";
 import { CreateClassroomDto } from '../../domain/dtos/classroom';
 import { PaginationDto } from "../../domain/dtos/shared";
 import { ClassroomRepository, EnrollmentRepository } from "../../domain/repositories";
@@ -9,6 +9,7 @@ import { CustomError } from "../../shared/errors";
 import { buildPaginationMeta, extractClassroomUUIDFromUrl } from "../../shared/utils";
 import { UploadedFile } from "express-fileupload";
 import { JoinStudentDto } from '../../domain/dtos/classroom/join-student.dto';
+import { PaginationResult } from "../../domain/interfaces";
 
 interface ClassroomServiceOptions {
   classroomRepo: ClassroomRepository
@@ -50,7 +51,7 @@ export class ClassroomService {
     return classroom
   }
 
-  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ) {
+  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ): Promise<PaginationResult<ClassroomEntity>> {
 
     const { limit, page } = paginationDto
     const skip = ( page - 1 ) * limit
@@ -136,5 +137,29 @@ export class ClassroomService {
 
     return await this.enrollmentRepo.joinStudent( userId, classroom.id )
   } 
+
+  public async getStudentsInClassroom( paginationDto: PaginationDto, classroomId: string ) {
+
+    const { page, limit } = paginationDto
+    const skip = ( page - 1 ) * limit
+
+    const [ studentsInClassroom, totalStudentsInClassroom ] = await Promise.all([
+      await this.enrollmentRepo.getStudentsOfClassroom( classroomId, skip, limit ),
+      await this.enrollmentRepo.countStudentsInClassroom( classroomId )
+    ])
+
+    const studentsEntityInClassroom = studentsInClassroom.map( studentInClassroom => {
+      studentInClassroom.student.password = ''
+      return studentInClassroom
+    })
+
+    return buildPaginationMeta( studentsEntityInClassroom, {
+      limit,
+      page,
+      totalItems: totalStudentsInClassroom
+    })
+
+  } 
+
 
 }
