@@ -11,12 +11,24 @@ export class AuthRoutes {
     const { authController } = controllers
 
     //* PRIVATE ROUTES
-    router.get('/renew-token', [ AuthMiddleware.validateJWT ], authController.renewToken )
-    router.get('/login-session/:userId', [AuthMiddleware.validateJWT], authController.getUserLoginSessions )
+    router.get('/renew-token', 
+      [ 
+        AuthMiddleware.validateJWT 
+      ]
+      , authController.renewToken 
+    )
+
+    router.get('/login-session/:userId', 
+      [
+        AuthMiddleware.validateJWT
+      ], authController.getUserLoginSessions 
+    )
     
     //* PUBLIC ROUTES
     router.post('/login', [ AuthMiddleware.sessionLogger ], authController.login )
-    router.post('/validate-account', authController.validateAccount )
+    
+    router.post('/validate-account', [ AuthMiddleware.sessionLogger ], authController.validateAccount )
+    
     router.post('/resend-verification-code', authController.resendValidationCode )
     router.post('/forgot-password', authController.forgotPassword )
     router.post('/change-password', authController.changePassword )

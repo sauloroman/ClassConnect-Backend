@@ -20,9 +20,29 @@ export class UserRoutes {
       ], 
       userController.putUserImage 
     )
-    router.get('/', [ AuthMiddleware.validateJWT, RolesMiddleware.allowRoles([ Roles.ADMIN ]) ], userController.getAllUsers )
-    router.put('/deactivate/:id', [ AuthMiddleware.validateJWT ], userController.deactivateUser )
-    router.put('/update/:id', [ AuthMiddleware.validateJWT ], userController.updateUserInfo )
+
+    router.get('/', 
+      [ 
+        AuthMiddleware.validateJWT, 
+        RolesMiddleware.allowRoles([ Roles.ADMIN ]) 
+      ], 
+      userController.getAllUsers 
+    )
+    
+    router.put('/deactivate/:id', 
+      [ 
+        AuthMiddleware.validateJWT,
+        RolesMiddleware.validateUserDesactivation, 
+      ], 
+      userController.deactivateUser 
+    )
+    
+    router.put('/update/:id', 
+      [ 
+        AuthMiddleware.validateJWT 
+      ], 
+      userController.updateUserInfo 
+    )
 
     //* PUBLIC ROUTES
     router.post('/', userController.postUser )

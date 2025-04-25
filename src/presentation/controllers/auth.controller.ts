@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../../aplication/services';
-import { ValidateUserDto } from '../../domain/dtos/user';
 import { CustomError } from '../../shared/errors';
-import { ChangePasswordDto, ForgotPasswordDto, LoginDto, ResentValidateCodeDto } from '../../domain/dtos/auth';
+import { ChangePasswordDto, ForgotPasswordDto, LoginDto, ResentValidateCodeDto, ValidateAccountDto } from '../../domain/dtos/auth';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -41,14 +40,16 @@ export class AuthController {
   }
 
   public validateAccount = (req: Request, res: Response): any => {
-    const [dto, errorMessage] = ValidateUserDto.create(req.body);
+
+    const { sessionInfo } = req.body
+    const [dto, errorMessage] = ValidateAccountDto.create(req.body);
 
     if (errorMessage) {
       return res.status(400).json({ ok: false, error: errorMessage });
     }
 
     this.authService
-      .validateAccount(dto!)
+      .validateAccount(dto!, sessionInfo)
       .then(({ user, token }) => {
         res.status(200).json({
           ok: true,

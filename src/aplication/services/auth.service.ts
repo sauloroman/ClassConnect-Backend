@@ -1,6 +1,5 @@
 import { LoginSessionEntity, UserEntity } from "../../domain/entities"
-import { ValidateUserDto } from "../../domain/dtos/user"
-import { ChangePasswordDto, ForgotPasswordDto, LoginDto } from "../../domain/dtos/auth"
+import { ChangePasswordDto, ForgotPasswordDto, LoginDto, ValidateAccountDto } from "../../domain/dtos/auth"
 import { UserRepository } from "../../domain/repositories"
 import { EmailService } from "../../domain/services/email.service"
 import { ValidateCodeService } from "./validate-code.service"
@@ -8,6 +7,7 @@ import { StatusVerificationCode } from "../../shared/enums"
 import { CustomError } from "../../shared/errors"
 import { bcryptAdapter, jwtAdapter } from "../../shared/plugins"
 import { LoginSessionService } from "./login-session.service"
+import { SessionInfo } from "../../domain/interfaces"
 
 interface AuthServiceOptions {
   userRepo: UserRepository,
@@ -90,7 +90,7 @@ export class AuthService {
 
   }
 
-  async validateAccount( dto: ValidateUserDto ): Promise<{ user: UserEntity, token: unknown }> {
+  async validateAccount( dto: ValidateAccountDto, sessionInfo: SessionInfo ): Promise<{ user: UserEntity, token: unknown }> {
     
     const user = await this.userRepo.findUserByEmail( dto.email )
     if (!user) throw CustomError.notFound(`El usuario con email: ${dto.email} no existe`)
@@ -106,6 +106,8 @@ export class AuthService {
       throw CustomError.unauthorized('El código ingresado no es correcto')
 
     const userUpdated = await this.userRepo.updateUser( user.id, { isAccountVerified: true } )
+    
+    await this.loginSessionService.registerLoginSession({ userId: user.id, ...sessionInfo })
 
     // TODO: Implementar welcomeEmail template
     // await this.emailSender.sendWelcomeEmail({

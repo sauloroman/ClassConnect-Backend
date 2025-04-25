@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { jwtAdapter, uaParserAdapter } from "../../shared/plugins";
 import { Roles } from "../../shared/enums";
 import { RepositoriesContainer } from "../../container/repositories.container";
+import { SessionInfo } from "../../domain/interfaces";
 
 const { userRepo } = RepositoriesContainer.getInstance()
 
@@ -16,7 +17,7 @@ export class AuthMiddleware {
       browser: browserName,
       device: deviceModel,
       os: osName
-    }
+    } as SessionInfo
 
     next()
   }

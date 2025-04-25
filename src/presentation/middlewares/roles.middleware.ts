@@ -66,7 +66,20 @@ export class RolesMiddleware {
     }
 
     next()
-
   }
+
+  public static validateUserDesactivation ( req: Request, res: Response, next: NextFunction ): any {
+
+    const { user } = req.body
+    const { id: userIdToDeactivate } = req.params
+
+    if ( user.role === Roles.ADMIN ) return next()
+
+    if ( user.id !== userIdToDeactivate ) {
+      return res.status(401).json({ ok: false, error: 'No tienes permitido eliminar a este usuario' })
+    }
+
+    next()
+  } 
 
 }

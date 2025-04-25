@@ -6,7 +6,7 @@ export class ValidateAccountDto {
   ){}
 
   private static validateEmptyValue( name: string, value: string ): string | null {
-    if ( value.trim().length == 0 ) return `${name} es necesario`
+    if ( value === undefined || value == null ) return `${name} es necesario`
     return null
   }
 
