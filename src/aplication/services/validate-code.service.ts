@@ -28,11 +28,12 @@ export class ValidateCodeService {
     const latestCode = await this.validateCodeRepo.getLatestCodeByUserId( userId )
     if ( !latestCode ) return StatusVerificationCode.Invalid
 
+    if ( latestCode.code !== code ) return StatusVerificationCode.Invalid
+    
     const diffMs = new Date().getTime() - latestCode.createdAt.getTime()
     const diffMin = diffMs / 1000 / 60
 
     if ( diffMin > this.activeCodeDurationInMinutes ) return StatusVerificationCode.Expired
-    if ( latestCode.code !== code ) return StatusVerificationCode.Invalid
 
     return StatusVerificationCode.Valid
   }

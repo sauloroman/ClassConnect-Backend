@@ -141,11 +141,12 @@ export class AuthService {
     }
 
     const code = await this.validateCodeService.generateValidationCode( user.id )
+    const token = await jwtAdapter.generateJWT({ id: user.id, email: user.email })
 
     await this.emailSender.sendValidationCode({
       to: user.email,
       subject: 'ClassConnect - Valida tu correo electrónico',   
-    }, code )
+    }, code, token as string )
 
   }
 
