@@ -23,6 +23,7 @@ export class AuthMiddleware {
   }
 
   public static async validateJWT( req: Request, res: Response, next: NextFunction ): Promise<any> {
+    req.body = {}
     const authorization = req.header('Authorization')
     if ( !authorization ) return res.status(401).json({ ok: false, error: 'Inicia sesión primero' })
     if ( !authorization.startsWith('Bearer ') ) return res.status(401).json({ ok: false, error: 'No hay token'})
@@ -33,6 +34,7 @@ export class AuthMiddleware {
       if ( !payload ) return res.status(401).json({ ok: false, error: 'El token es invalido'})
       
       const user = await userRepo.findById( payload.id )
+      
       if ( !user ) return res.status(401).json({ ok: false, error: 'Token Invalido - Usuario no existente'})
       if ( !user.isActive ) return res.status(401).json({ ok: false, error: 'Token Invalido - Usuarion no activo'})
 

@@ -28,13 +28,13 @@ export class NodemailerService implements EmailService {
     this.postToProvider = postToProvider
   }
 
-  async sendValidationCode(sendEmailOptions: ISendEmailOptions, code: string): Promise<void> {
+  async sendValidationCode(sendEmailOptions: ISendEmailOptions, code: string, token: string ): Promise<void> {
     
     const { to, subject } = sendEmailOptions
 
     try { 
 
-      const htmlBody = verificationCodeEmailTemplate( code )
+      const htmlBody = verificationCodeEmailTemplate( code, token )
 
       const sentInformation = await this.transporter.sendMail({
         from: `ClassConnect <${this.transporter.options.from?.toString()}>`,

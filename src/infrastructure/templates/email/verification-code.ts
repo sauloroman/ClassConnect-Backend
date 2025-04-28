@@ -1,4 +1,9 @@
-export const verificationCodeEmailTemplate = (code: string): string => {
+import { envs } from "../../../shared/plugins";
+
+export const verificationCodeEmailTemplate = (code: string, token: string ): string => {
+
+  const { FRONTEND_URL } = envs
+
   const htmlBody = `
     <!DOCTYPE html>
     <html style="font-size: 62.5%;" lang="en">
@@ -43,7 +48,7 @@ export const verificationCodeEmailTemplate = (code: string): string => {
           <p>Gracias por registrarte 👋. Para completar el proceso, introduce el siguiente código de verificación:</p>
           <div style="text-align: center; margin: 2rem 0 3rem; color: #142027;">
             <p style="font-size: 2rem; letter-spacing: 1.2px; font-weight: bold;">${code}</p>
-            <a style="text-decoration: none; border-radius: 5px; padding: .5rem 2rem; display: inline-block; color: #fff; background-color: #84cf13; margin-top: -1rem;" href="https://google.com">Ingresar código</a>
+            <a style="text-decoration: none; border-radius: 5px; padding: .5rem 2rem; display: inline-block; color: #fff; background-color: #84cf13; margin-top: -1rem;" href="${FRONTEND_URL}/auth/validate-account/${token}">Ingresar código</a>
           </div>
           <p>Este código expirará en <span style="font-weight: 700; margin-bottom: 2px; border-bottom: 2px solid currentColor;">10 minutos</span></p>
           <p style="margin-top: -1rem;">Si no has solicitado este correo, simplemente ignóralo.</p>

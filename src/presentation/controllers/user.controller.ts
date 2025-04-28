@@ -30,11 +30,12 @@ export class UserControllers {
     }
 
     this.userService.createUser( dto! )
-      .then( user => {
+      .then( ({user, token}) => {
         res.status(201).json({
           ok: true,
           msg: `Se ha enviado un correo electrónico a: ${user.email}. Revisa tu bandeja de entrada para validar tu correo.`,
           user,
+          token,
         })
       }) 
       .catch( error => this.handleErrorResponse( error, res ) )

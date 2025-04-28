@@ -5,7 +5,7 @@ import { UserRepository } from '../../domain/repositories';
 import { EmailService } from '../../domain/services/email.service';
 import { ValidateCodeService } from './validate-code.service';
 import { CustomError } from '../../shared/errors';
-import { bcryptAdapter } from '../../shared/plugins';
+import { bcryptAdapter, jwtAdapter } from '../../shared/plugins';
 import { PaginationResult } from '../../domain/interfaces/pagination-result.interface';
 import { buildPaginationMeta } from '../../shared/utils/pagination.util';
 import { UploadedFile } from 'express-fileupload';
@@ -45,7 +45,7 @@ export class UserService {
     return buildPaginationMeta( users, { page, limit, totalItems: totalUsers })
   } 
 
-  async createUser(dto: CreateUserDto): Promise<UserEntity> {
+  async createUser(dto: CreateUserDto): Promise<{ user: UserEntity, token: unknown }> {
     const existing = await this.userRepo.findUserByEmail(dto.email);
 
     if (existing) {
@@ -59,15 +59,19 @@ export class UserService {
     await this.userRepo.updateUser(user.id, { password: user.password });
 
     const code = await this.validateCodeService.generateValidationCode(user.id);
+    const token = await jwtAdapter.generateJWT({ id: user.id, email: user.email })
 
     await this.emailSender.sendValidationCode({
       to: user.email,
       subject: 'ClassConnect - Valida tu correo electrónico',   
-    }, code )
+    }, code, token as string )
 
     return { 
-      ...user,
-      password: ''
+      user: {
+        ...user,
+        password: ''
+      },
+      token
     }
   }
 
