@@ -3,7 +3,6 @@ import { envs } from "../../../shared/plugins";
 export const forgotPasswordEmailTemplate = (token: string): string => {
 
   const { FRONTEND_URL } = envs
-  const url = `${FRONTEND_URL}auth/${token}`
 
   const htmlBody = `  
     <!DOCTYPE html>
@@ -49,11 +48,25 @@ export const forgotPasswordEmailTemplate = (token: string): string => {
           <div style="text-align: left; color: #142027; padding: 0 2rem;">
             <p style="margin-bottom: 3rem;">Hemos recibido una solicitud para recuperar tu contraseña para este correo electrónico 🧐. Presiona el siguiente botón para crear una nueva contraseña.</p>
             <div style="text-align: center; margin: 4rem 0;">
-              <a style="text-decoration: none; border-radius: 5px; padding: .5rem 2rem; display: inline-block; color: #fff; background-color: #84cf13; margin-top: -1rem;" href="${url}">Crear nueva contraseña</a>
+              <a 
+                style="
+                  text-decoration: none; 
+                  border-radius: 5px; 
+                  padding: .5rem 2rem; 
+                  display: inline-block; 
+                  color: #fff; 
+                  background-color: #84cf13; 
+                  margin-top: -1rem;
+                " 
+                href="${FRONTEND_URL}/auth/password/change-password/${token}">Crear nueva contraseña</a>
             </div>
           </div>
           <div style="padding: 0 2rem;">
-            <p>Si no puedes navegar, presiona el siguiente link: <a href="${url}" style="text-decoration: none; color: #142027; font-weight: 700; margin-bottom: 2px; border-bottom: 2px solid currentColor;">Quiero recuperar mi contraseña</a></p>
+            <p>Si no puedes navegar, presiona el siguiente link: 
+              <a href="${FRONTEND_URL}/auth/password/change-password/${token}" style="text-decoration: none; color: #142027; font-weight: 700; margin-bottom: 2px; border-bottom: 2px solid currentColor;">
+                Quiero recuperar mi contraseña
+              </a>
+            </p>
             <p style="margin-top: -1rem;">Si no has solicitado este correo, simplemente ignóralo.</p>
             <div style="margin-top: 2rem; border-top: 2px solid #ddd; display: flex; flex-direction: column; align-items: center;">
               <p style="font-size: 1rem;">@2025 ClassConnect. Todos los derechos reservados.</p>
