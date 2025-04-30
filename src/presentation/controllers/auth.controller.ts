@@ -107,7 +107,14 @@ export class AuthController {
     }
 
     this.authService.changeAccountPassword( dto! )
-      .then( () => res.status(200).json({ ok: true, msg: 'La contraseña se ha cambiado correctamente. Inicie sesión.'}))
+      .then( ({ user, token }) => {
+        res.status(200).json({ 
+          ok: true, 
+          msg: 'La contraseña se ha cambiado correctamente. Inicie sesión.',
+          user,
+          token,
+        })
+      })
       .catch( err => this.handleErrorResponse( err, res ) )
 
   }

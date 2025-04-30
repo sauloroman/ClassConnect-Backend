@@ -73,7 +73,7 @@ export class AuthService {
 
   }
 
-  async changeAccountPassword( changePasswordDto: ChangePasswordDto ): Promise<void> {
+  async changeAccountPassword( changePasswordDto: ChangePasswordDto ): Promise<{ user: UserEntity, token: string }> {
 
     const { newPassword, userEmail } = changePasswordDto
 
@@ -83,11 +83,22 @@ export class AuthService {
     const newPasswordHashed = bcryptAdapter.hash( newPassword )
     await this.userRepo.updateUser( user.id, { password: newPasswordHashed } )
 
+    const payload = {
+      id: user.id,
+      role: user.role,
+      email: user.email
+    }
+    const token = await jwtAdapter.generateJWT( payload )
+
     await this.emailSender.sendChangedPasswordEmail({
       subject: 'ClassConnnect - Cambio de contraseña',
       to: user.email,
     })
 
+    return { 
+      user,
+      token: token as string 
+    }
   }
 
   async validateAccount( dto: ValidateAccountDto, sessionInfo: SessionInfo ): Promise<{ user: UserEntity, token: unknown }> {
