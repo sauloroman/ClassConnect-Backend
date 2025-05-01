@@ -1,9 +1,8 @@
-import { ClassroomEntity, EnrollmentEntity, UserEntity } from "../../domain/entities";
+import { ClassroomCategoryEntity, ClassroomEntity, EnrollmentEntity, UserEntity } from "../../domain/entities";
 import { CreateClassroomDto } from '../../domain/dtos/classroom';
 import { PaginationDto } from "../../domain/dtos/shared";
-import { ClassroomRepository, EnrollmentRepository } from "../../domain/repositories";
+import { ClassroomCategoryRepository, ClassroomRepository, EnrollmentRepository, ClassroomCategoriesRepository } from "../../domain/repositories";
 import { QRCodeService, FileUploadService } from "../../domain/services";
-
 import { getIdAdapter } from "../../shared/plugins";
 import { CustomError } from "../../shared/errors";
 import { buildPaginationMeta, extractClassroomUUIDFromUrl } from "../../shared/utils";
@@ -12,7 +11,9 @@ import { JoinStudentDto } from '../../domain/dtos/classroom/join-student.dto';
 import { PaginationResult } from "../../domain/interfaces";
 
 interface ClassroomServiceOptions {
-  classroomRepo: ClassroomRepository
+  classroomRepo: ClassroomRepository,
+  classroomCategoryRepo: ClassroomCategoryRepository,
+  classroomCategoriesRepo: ClassroomCategoriesRepository,
   enrollmentRepo: EnrollmentRepository,
   qrCodeService: QRCodeService,
   fileUploadService: FileUploadService
@@ -21,12 +22,23 @@ interface ClassroomServiceOptions {
 export class ClassroomService {
 
   private readonly classroomRepo: ClassroomRepository
+  private readonly classroomCategoryRepo: ClassroomCategoryRepository
+  private readonly classroomCategoriesRepo: ClassroomCategoriesRepository
   private readonly enrollmentRepo: EnrollmentRepository
   private readonly qrCodeService: QRCodeService
   private readonly fileUploadService: FileUploadService
 
-  constructor( { classroomRepo, enrollmentRepo, qrCodeService, fileUploadService }: ClassroomServiceOptions ) {
+  constructor( { 
+    classroomRepo, 
+    classroomCategoryRepo, 
+    classroomCategoriesRepo,
+    enrollmentRepo, 
+    qrCodeService, 
+    fileUploadService 
+  }: ClassroomServiceOptions ) {
     this.classroomRepo = classroomRepo
+    this.classroomCategoryRepo = classroomCategoryRepo
+    this.classroomCategoriesRepo = classroomCategoriesRepo
     this.enrollmentRepo = enrollmentRepo
     this.qrCodeService = qrCodeService
     this.fileUploadService = fileUploadService
@@ -39,12 +51,29 @@ export class ClassroomService {
       code = getIdAdapter.classroomCode()
     } while( await this.classroomRepo.existsCode( code ) )
 
+    const { categories, ...restCreateClassroom } = createClassroomDto
+
+    const categoriesEntity = await Promise.all(
+      categories.map( async ( category ) => {
+        const entity = await this.classroomCategoryRepo.getClassroomCategoryByName( category )
+        if ( !entity ) throw CustomError.badRequest(`La categoria "${category}" no es válida`)
+        return entity
+      })
+    )
+    
     const classroom = await this.classroomRepo.createClassroom({
-      ...createClassroomDto,
+      ...restCreateClassroom,
       code,
       instructorId: userId
     })
 
+    await Promise.all([
+      categoriesEntity.map( categoryEntity => {
+        this.classroomCategoriesRepo.saveRecord( classroom.id, categoryEntity.id )
+      })
+    ])
+
+    // Inscribir al instructor como estudiante con progreso completo
     const enrollment = await this.enrollmentRepo.joinStudent( userId, classroom.id )
     await this.enrollmentRepo.updateEnrollment( enrollment.id, { progress: 100.0 } )
 

@@ -23,7 +23,11 @@ export class AuthMiddleware {
   }
 
   public static async validateJWT( req: Request, res: Response, next: NextFunction ): Promise<any> {
-    req.body = {}
+    
+    if ( req.method === 'GET') {
+      req.body = {}
+    }
+    
     const authorization = req.header('Authorization')
     if ( !authorization ) return res.status(401).json({ ok: false, error: 'Inicia sesión primero' })
     if ( !authorization.startsWith('Bearer ') ) return res.status(401).json({ ok: false, error: 'No hay token'})

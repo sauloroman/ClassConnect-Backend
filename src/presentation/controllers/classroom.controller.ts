@@ -20,10 +20,9 @@ export class ClassroomController {
   }
 
   public  postClassroom = (req: Request, res: Response): any => {
-
     const [ dto, errorMessage ] = CreateClassroomDto.create( req.body )
     const { user } = req.body
-    
+
     if ( errorMessage ) {
       return res.status(400).json({ ok: false, error: errorMessage })
     }
@@ -37,7 +36,6 @@ export class ClassroomController {
         })
       })
       .catch( err => this.handleErrorResponse( err, res ) )
-
   }  
 
   public getQrCodeForClassroom = ( req: Request, res: Response ): any => {
