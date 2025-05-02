@@ -60,6 +60,12 @@ export class ClassroomRoutes {
       classroomController.getQrCodeForClassroom 
     )
 
+    router.get(
+      '/categories', 
+      [ AuthMiddleware.validateJWT ],
+      classroomController.getClassroomsCategories
+    )
+
     return router
   }
 

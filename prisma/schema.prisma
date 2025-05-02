@@ -102,6 +102,7 @@ model Classroom {
   id String @id @default(uuid())
   title String @db.VarChar(200)
   group String
+  career String
   code String @unique @db.VarChar(10)
   createdAt DateTime @default(now())
   updatedAt DateTime? 

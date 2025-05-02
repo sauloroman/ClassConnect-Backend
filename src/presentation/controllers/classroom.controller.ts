@@ -134,5 +134,13 @@ export class ClassroomController {
 
   }
 
+  public getClassroomsCategories = ( _: Request, res: Response ): any => {
+
+    this.classroomService.getCategoriesOfClassrooms()
+      .then( (categories) => res.status(200).json({ ok: true, categories: categories }))
+      .catch( err => this.handleErrorResponse( err, res ))
+
+  }
+
 
 }

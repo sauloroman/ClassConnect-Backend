@@ -80,7 +80,7 @@ export class ClassroomService {
     return classroom
   }
 
-  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ): Promise<PaginationResult<any>> {
+  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ): Promise<PaginationResult<ClassroomEntity & { categories: ClassroomCategoryEntity[] }>> {
 
     const { limit, page } = paginationDto
     const skip = ( page - 1 ) * limit
@@ -103,7 +103,7 @@ export class ClassroomService {
         }
       })
     )
-    
+
     return buildPaginationMeta( classroomsWithCategories, { 
       page, 
       limit, 
@@ -199,6 +199,11 @@ export class ClassroomService {
     })
 
   } 
+
+  public async getCategoriesOfClassrooms(): Promise<ClassroomCategoryEntity[]> {
+    const categories = await this.classroomCategoryRepo.getAllClassroomCategory()
+    return categories
+  }
 
 
 }
