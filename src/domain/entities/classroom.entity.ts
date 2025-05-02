@@ -5,13 +5,15 @@ export class ClassroomEntity {
   private constructor(
     public readonly id: string,
     public readonly title: string,
+    public readonly group: string,
     public readonly code: string,
     public readonly createdAt: Date,
     public readonly instructorId: string,
-    public readonly qrCode?: string,
     public readonly updatedAt?: Date,
     public readonly description?: string,
     public readonly img?: string,
+    public readonly color?: string,
+    public readonly qrCode?: string,
   ){}
 
   private static sendErrorForStringTypes = ( prop: string ): CustomError => {
@@ -26,18 +28,32 @@ export class ClassroomEntity {
       }
     }
 
-    const { id, title, code, createdAt, instructorId, qrCode, updatedAt, description, img } = obj
+    const { 
+      id, 
+      title, 
+      group,
+      code, 
+      createdAt, 
+      instructorId, 
+      updatedAt, 
+      description, 
+      img, 
+      color, 
+      qrCode, 
+    } = obj
 
     return new ClassroomEntity(
       id, 
       title,
+      group,
       code,
       createdAt,
       instructorId,
-      qrCode,
       updatedAt,
       description,
-      img
+      img,
+      color,
+      qrCode,
     )
 
   }

@@ -8,8 +8,8 @@ import {
   ValidateCodeRepository 
 } from "../domain/repositories";
 import { 
-  PrimaClassroomCategoriesRepository,
   PrismaClassroomCategoryRepository,
+  PrismaClassroomCategoriesRepository,
   PrismaClassroomRepository, 
   PrismaEnrollmentRepository, 
   PrismaLoginSessionRepository, 
@@ -35,7 +35,7 @@ export class RepositoriesContainer {
     this.classroomRepo = new PrismaClassroomRepository()
     this.enrollmentRepo = new PrismaEnrollmentRepository()
     this.classroomCategoryRepo = new PrismaClassroomCategoryRepository()
-    this.classroomCategoriesRepo = new PrimaClassroomCategoriesRepository()
+    this.classroomCategoriesRepo = new PrismaClassroomCategoriesRepository()
   }
 
   public static getInstance(): RepositoriesContainer {
