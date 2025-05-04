@@ -1,4 +1,5 @@
 import { CustomError } from "../../shared/errors"
+import { InstructorClassroom } from "../interfaces"
 
 export class ClassroomEntity {
 
@@ -9,7 +10,7 @@ export class ClassroomEntity {
     public readonly career: string,
     public readonly code: string,
     public readonly createdAt: Date,
-    public readonly instructorId: string,
+    public readonly instructor: InstructorClassroom,
     public readonly updatedAt?: Date,
     public readonly description?: string,
     public readonly img?: string,
@@ -36,7 +37,7 @@ export class ClassroomEntity {
       career,
       code, 
       createdAt, 
-      instructorId, 
+      instructor, 
       updatedAt, 
       description, 
       img, 
@@ -51,7 +52,7 @@ export class ClassroomEntity {
       career,
       code,
       createdAt,
-      instructorId,
+      instructor,
       updatedAt,
       description,
       img,

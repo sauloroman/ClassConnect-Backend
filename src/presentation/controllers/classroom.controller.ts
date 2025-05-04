@@ -31,7 +31,7 @@ export class ClassroomController {
       .then( data => {
         res.status(201).json({
           ok: true,
-          msg: `El classroom ${data.title} ha sido creado correctamente`,
+          msg: `El aula ha sido creada correctamente`,
           data,
         })
       })
@@ -74,7 +74,7 @@ export class ClassroomController {
 
   public getClassroomsOfInstructor = ( req: Request, res: Response ): any => {
 
-    const { page, limit } = req.query
+    const { page, limit, category } = req.query
     const [ paginationDto, errorMessage ] = PaginationDto.create( +page!, +limit! )
     const { instructorId } = req.params
 
@@ -82,7 +82,11 @@ export class ClassroomController {
       return res.status(400).json({ ok: false, error: errorMessage })
     }
 
-    this.classroomService.getClassroomsByInstructorId( paginationDto!, instructorId )
+    this.classroomService.getClassroomsByInstructorId( 
+      paginationDto!, 
+      instructorId, 
+      category as string 
+    )
       .then( pagination => {
         res.status(200).json({
           ok: true,

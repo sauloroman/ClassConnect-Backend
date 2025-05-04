@@ -44,7 +44,8 @@ export class ClassroomService {
     this.fileUploadService = fileUploadService
   }
 
-  public async createClassroom ( createClassroomDto: CreateClassroomDto, userId: string ): Promise<ClassroomEntity> {
+  public async createClassroom ( createClassroomDto: CreateClassroomDto, userId: string ): 
+  Promise<PaginationResult<ClassroomEntity & { categories: ClassroomCategoryEntity[] }>> {
 
     let code: string = '';
     do {
@@ -77,10 +78,14 @@ export class ClassroomService {
     const enrollment = await this.enrollmentRepo.joinStudent( userId, classroom.id )
     await this.enrollmentRepo.updateEnrollment( enrollment.id, { progress: 100.0 } )
 
-    return classroom
+    return await this.getClassroomsByInstructorId({ page: 1, limit: 8 }, userId, '')
   }
 
-  public async getClassroomsByInstructorId( paginationDto: PaginationDto, instructorId: string ): Promise<PaginationResult<ClassroomEntity & { categories: ClassroomCategoryEntity[] }>> {
+  public async getClassroomsByInstructorId( 
+    paginationDto: PaginationDto, 
+    instructorId: string,
+    category: string,
+  ): Promise<PaginationResult<ClassroomEntity & { categories: ClassroomCategoryEntity[] }>> {
 
     const { limit, page } = paginationDto
     const skip = ( page - 1 ) * limit
@@ -97,6 +102,9 @@ export class ClassroomService {
     const classroomsWithCategories = await Promise.all(
       classroomsOfInstructor.map( async(classroom) => {
         const categories = await this.classroomCategoriesRepo.getCategoriesByClassroomId( classroom.id )
+
+        if ( category && !categories.some( cat => cat.categoryName === category ) ) return null
+
         return {
           ...classroom,
           categories,
@@ -104,10 +112,13 @@ export class ClassroomService {
       })
     )
 
-    return buildPaginationMeta( classroomsWithCategories, { 
+    const filteredClassrooms = classroomsWithCategories.filter( classroom => classroom !== null )
+    const totalFiltered = filteredClassrooms.length
+
+    return buildPaginationMeta( filteredClassrooms, { 
       page, 
       limit, 
-      totalItems: totalClassroomsOfInstructor 
+      totalItems: category ? totalFiltered : totalClassroomsOfInstructor 
     })
 
   }

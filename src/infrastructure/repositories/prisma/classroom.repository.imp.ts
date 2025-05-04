@@ -48,8 +48,19 @@ export class PrismaClassroomRepository implements ClassroomRepository {
       where: { instructorId },
       skip: offset,
       take: limit,
-      orderBy: { createdAt: 'desc' }
+      include: {
+        instructor: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
     })
+
+    console.log(classrooms)
 
     const classroomsEntities = classrooms.map( ClassroomEntity.fromObject )
     return classroomsEntities
