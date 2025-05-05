@@ -51,7 +51,7 @@ export class RolesMiddleware {
 
     if ( user.role === Roles.TEACHER ) {
       const classroom = await classroomRepo.getClassroomById( classroomId )
-      if ( classroom?.instructorId !== user.id ) {
+      if ( classroom?.instructor.id !== user.id ) {
         return res.status(401).json({ ok: false, error: 'No eres el instructor de esta aula'})
       }
       return next()

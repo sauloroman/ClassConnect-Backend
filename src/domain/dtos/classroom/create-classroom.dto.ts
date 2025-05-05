@@ -24,6 +24,6 @@ export class CreateClassroomDto {
         categories
       ) 
     ]
-  }
+  } 
 
 }
